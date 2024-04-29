@@ -1,1 +1,69 @@
-<p>single-player works!</p>
+<div class="container boards">
+  <div class="row">
+    <div class="col-md-6">
+      <!-- <table class="player">
+        <tr *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7]">
+          <td *ngFor="let col of [0, 1, 2, 3, 4, 5, 6, 7]">&nbsp;</td>
+        </tr>
+      </table> -->
+      <table class="player">
+        <tr *ngFor="let row of playerBoard">
+          <td
+            *ngFor="let cell of row"
+            [ngClass]="{ 'ship-cell': cell.shipId !== null }"
+          >
+            &nbsp;
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <!-- <table class="computer">
+        <tr *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7]">
+          <td *ngFor="let col of [0, 1, 2, 3, 4, 5, 6, 7]">&nbsp;</td>
+        </tr>
+      </table> -->
+      <table class="player">
+        <tr *ngFor="let row of computerBoard">
+          <td
+            *ngFor="let cell of row"
+            [ngClass]="{ 'ship-cell': cell.shipId !== null }"
+          >
+            &nbsp;
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="ships-container">
+  <div *ngFor="let ship of ships" class="ships" [ngClass]="ship.name"></div>
+</div>
+
+<div class="container">
+  <div class="row buttons">
+    <div class="col-xs-12">
+      <button
+        class="btn btn-info"
+        [disabled]="!this.isStartGame"
+        (click)="(start)"
+      >
+        start
+      </button>
+      <button class="btn btn-info flip" (click)="(flip)">Flip The Ship</button>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="port-container">
+  <div class="col-xs-12">
+    <div class="port">
+      <div class="ship1" id="1"></div>
+      <div class="ship2" id="2"></div>
+      <div class="ship3" id="3"></div>
+      <div class="ship4" id="4"></div>
+      <div class="ship5" id="5"></div>
+    </div>
+  </div>
+</div> -->
