@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { User } from './auth.model';
+import { User } from '../shared-models/auth.model';
 import { environment } from '../../environments/environment';
 
 export interface AuthResponseData {

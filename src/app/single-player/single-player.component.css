@@ -36,3 +36,26 @@
   transform: translateX(50%);
   transform-origin: top right;
 } */
+
+.ships-container {
+  box-sizing: border-box;
+  height: 400px;
+  width: 200px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  left: 20px;
+  top: 20%;
+  border-width: 20px;
+}
+
+/* .ship1 {
+  width: 50px;
+  height: 100px;
+  background-color: black;
+}
+.ship2 {
+  width: 50px;
+  height: 150px;
+  background-color: purple;
+} */
