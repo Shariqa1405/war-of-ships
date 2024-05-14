@@ -1,16 +1,17 @@
 <div class="container boards">
   <div class="row">
     <div class="col-md-6">
-      <!-- <table class="player">
-        <tr *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7]">
-          <td *ngFor="let col of [0, 1, 2, 3, 4, 5, 6, 7]">&nbsp;</td>
-        </tr>
-      </table> -->
-      <table class="player">
-        <tr *ngFor="let row of playerBoard">
+      <table class="player" cdkDropListGroup>
+        <tr
+          *ngFor="let row of playerBoard"
+          cdkDropList
+          (cdkDropListDropped)="onDrop($event)"
+        >
           <td
             *ngFor="let cell of row"
             [ngClass]="{ 'ship-cell': cell.shipId !== null }"
+            cdkDropList
+            (cdkDropListDropped)="onDrop($event)"
           >
             &nbsp;
           </td>
@@ -18,12 +19,7 @@
       </table>
     </div>
     <div class="col-md-6">
-      <!-- <table class="computer">
-        <tr *ngFor="let row of [0, 1, 2, 3, 4, 5, 6, 7]">
-          <td *ngFor="let col of [0, 1, 2, 3, 4, 5, 6, 7]">&nbsp;</td>
-        </tr>
-      </table> -->
-      <table class="player">
+      <table class="computer">
         <tr *ngFor="let row of computerBoard">
           <td
             *ngFor="let cell of row"
@@ -37,8 +33,19 @@
   </div>
 </div>
 
-<div class="ships-container">
-  <div *ngFor="let ship of ships" class="ships" [ngClass]="ship.name"></div>
+<div
+  class="ships-container"
+  cdkDropList
+  [cdkDropListData]="ships"
+  (cdkDropListDropped)="onDrop($event)"
+>
+  <div
+    *ngFor="let ship of ships"
+    class="ships"
+    [ngClass]="ship.name"
+    cdkDrag
+    [cdkDragData]="ship"
+  ></div>
 </div>
 
 <div class="container">
@@ -55,15 +62,3 @@
     </div>
   </div>
 </div>
-
-<!-- <div class="port-container">
-  <div class="col-xs-12">
-    <div class="port">
-      <div class="ship1" id="1"></div>
-      <div class="ship2" id="2"></div>
-      <div class="ship3" id="3"></div>
-      <div class="ship4" id="4"></div>
-      <div class="ship5" id="5"></div>
-    </div>
-  </div>
-</div> -->

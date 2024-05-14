@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Ship } from '../shared-models/ships.model';
+import { Ship, ShipPart } from '../shared-models/ships.model';
 import { Column } from '../shared-models/column.model';
 import { v4 as uuid } from 'uuid';
+import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+
 // import { BoardsService } from '../sharedServices/boards.service';
 
 @Component({
@@ -81,7 +83,6 @@ export class SinglePlayerComponent implements OnInit {
     new Ship('ship4', 5, 4),
     new Ship('ship5', 5, 5),
   ];
-
   constructor() {
     this.initializeBoard(this.playerBoard);
     this.initializeBoard(this.computerBoard);
@@ -102,9 +103,11 @@ export class SinglePlayerComponent implements OnInit {
         board[r][c] = { shipId: null };
       }
     }
+    console.log('Board initialized:', board);
   }
 
   placeShips(board: any[][]) {
+    console.log('>>>>');
     this.ships.forEach((ship) => {
       const length = ship.length;
       const row = Math.floor(Math.random() * 8);
@@ -113,6 +116,7 @@ export class SinglePlayerComponent implements OnInit {
         board[row][col + i].shipId = ship.id;
       }
     });
+    console.log('Ships placed:', board);
   }
 
   isStartGame = true;
@@ -121,6 +125,70 @@ export class SinglePlayerComponent implements OnInit {
 
   start() {
     this.isStartGame = !this.isStartGame;
+  }
+
+  onDrop(event: CdkDragDrop<any[]>) {
+    if (event.previousContainer !== event.container) {
+      const droppedShip: Ship = event.item.data;
+      const targetRowIndex = this.playerBoard.indexOf(event.container.data);
+      const targetCellIndex = event.currentIndex;
+
+      // Check if the ship fits horizontally within the target row
+      if (
+        targetCellIndex + droppedShip.length <=
+        this.playerBoard[targetRowIndex].length
+      ) {
+        let canPlaceHorizontally = true;
+        for (let i = 0; i < droppedShip.length; i++) {
+          const currentCell =
+            this.playerBoard[targetRowIndex][targetCellIndex + i];
+          if (currentCell.shipId !== null) {
+            canPlaceHorizontally = false;
+            break;
+          }
+        }
+
+        // Place the ship if it fits horizontally
+        if (canPlaceHorizontally) {
+          for (let i = 0; i < droppedShip.length; i++) {
+            this.playerBoard[targetRowIndex][targetCellIndex + i].shipId =
+              droppedShip.id;
+          }
+          this.ships = this.ships.filter((ship) => ship.id !== droppedShip.id);
+          return;
+        }
+      } else {
+        console.log('Ship does not fit horizontally');
+      }
+
+      // Check if the ship fits vertically within the column
+      if (targetRowIndex + droppedShip.length <= this.playerBoard.length) {
+        let canPlaceVertically = true;
+        for (let i = 0; i < droppedShip.length; i++) {
+          const currentRow = targetRowIndex + i;
+          const currentCell = this.playerBoard[currentRow][targetCellIndex];
+          if (currentCell.shipId !== null) {
+            canPlaceVertically = false;
+            break;
+          }
+        }
+
+        // Place the ship if it fits vertically
+        if (canPlaceVertically) {
+          for (let i = 0; i < droppedShip.length; i++) {
+            const currentRow = targetRowIndex + i;
+            this.playerBoard[currentRow][targetCellIndex].shipId =
+              droppedShip.id;
+          }
+          this.ships = this.ships.filter((ship) => ship.id !== droppedShip.id);
+          return;
+        }
+      } else {
+        console.log('Ship does not fit vertically');
+      }
+    }
+    console.log(event);
+    console.log('Updated playerBoard:', this.playerBoard);
   }
 
   flip() {}

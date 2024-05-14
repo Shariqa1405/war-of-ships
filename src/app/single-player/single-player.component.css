@@ -49,7 +49,7 @@
   border-width: 20px;
 }
 
-/* .ship1 {
+.ship1 {
   width: 50px;
   height: 100px;
   background-color: black;
@@ -58,4 +58,19 @@
   width: 50px;
   height: 150px;
   background-color: purple;
-} */
+}
+.ship3 {
+  width: 50px;
+  height: 200px;
+  background-color: pink;
+}
+.ship4 {
+  width: 50px;
+  height: 250px;
+  background-color: lightblue;
+}
+.ship5 {
+  width: 50px;
+  height: 250px;
+  background-color: cyan;
+}
