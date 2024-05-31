@@ -5,10 +5,10 @@
         <tr *ngFor="let row of playerBoard; let rowIndex = index">
           <td
             *ngFor="let cell of row; let colIndex = index"
-            [ngClass]="{ 'ship-cell': cell.ship !== null }"
-            (click)="placeShip(rowIndex, colIndex)"
+            [ngClass]="{ 'ship-cell': cell.ship }"
+            (click)="columnClick(cell.id)"
+            [id]="cell.id"
           >
-            &nbsp;
           </td>
         </tr>
       </table>
