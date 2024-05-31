@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Ship, ShipPart } from '../shared-models/ships.model';
 import { Column } from '../shared-models/column.model';
 import { v4 as uuid } from 'uuid';
-import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { BoardsService } from '../sharedServices/Boards.service';
 
 // import { BoardsService } from '../sharedServices/boards.service';
 
@@ -12,17 +12,29 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
   styleUrl: './single-player.component.css',
 })
 export class SinglePlayerComponent implements OnInit {
-  playerBoard: any[][] = [];
-  computerBoard: any[][] = [];
+  constructor(private boardsService: BoardsService) {
+    // this.initBoard('player');
+    // this.initData('player');
+    // this.initBoard('computer');
+    // this.initData('computer');
+  }
+
+  playerBoard: Column[][] = [];
+  computerBoard: Column[][] = [];
+
+  currentShipIndex: number = 0;
+  selectedShip: Ship | null = null;
+  shipPlacementCount: number = 0;
+  angle: number = 0;
+
+  width: number = 8;
+  height: number = 8;
 
   // alt
   boardsMap: Map<string, Map<string, Column>> = new Map();
   boards: string[][] = [];
   // player || computer
   //
-
-  width: number = 10;
-  height: number = 10;
 
   initBoard(side: string) {
     for (let h = 0; h < this.height; h++) {
@@ -57,7 +69,7 @@ export class SinglePlayerComponent implements OnInit {
   }
 
   addPart(columnId: string, side: string) {
-    let board: any[][];
+    let board: Column[][];
     if (side === 'player') {
       board = this.playerBoard;
     } else {
@@ -67,13 +79,10 @@ export class SinglePlayerComponent implements OnInit {
     const row = parseInt(columnId.split('-')[0]);
     const col = parseInt(columnId.split('-')[1]);
 
-    board[row][col] = { ...board[row][col], hasPart: true };
+    const part = new ShipPart(null, columnId, false);
+    board[row][col].setPart(part);
 
-    if (side === 'player') {
-      //  player turn
-    } else {
-      // computer turn
-    }
+    console.log('77777', board);
   }
 
   ships: Ship[] = [
@@ -83,113 +92,115 @@ export class SinglePlayerComponent implements OnInit {
     new Ship('ship4', 5, 4),
     new Ship('ship5', 5, 5),
   ];
-  constructor() {
+
+  ngOnInit() {
     this.initializeBoard(this.playerBoard);
     this.initializeBoard(this.computerBoard);
-    this.placeShips(this.playerBoard);
-    this.placeShips(this.computerBoard);
-
-    this.initBoard('player');
-    this.initData('player');
-
-    this.initBoard('computer');
-    this.initData('computer');
+    // this.placeShips(this.playerBoard);
+    // this.placeShips(this.computerBoard);
   }
 
-  initializeBoard(board: any[][]) {
-    for (let r = 0; r < 8; r++) {
-      board[r] = [];
-      for (let c = 0; c < 8; c++) {
-        board[r][c] = { shipId: null };
+  initializeBoard(board: Column[][]) {
+    for (let r = 0; r < this.height; r++) {
+      const row: Column[] = [];
+      for (let c = 0; c < this.width; c++) {
+        const id = `${r}-${c}`;
+        row.push(new Column(id));
+      }
+      board.push(row);
+    }
+    console.log('3333', board);
+  }
+
+  selectShip(ship: Ship) {
+    this.selectedShip = ship;
+    this.shipPlacementCount = 0;
+    console.log('Selected ship:', ship);
+  }
+
+  placeShip(row: number, col: number) {
+    console.log(`placing ship at (${row}, ${col})`);
+    if (!this.selectedShip) {
+      console.log('No ship selected or ship already fully placed.');
+      return;
+    }
+
+    if (this.shipPlacementCount < this.selectedShip.length) {
+      if (
+        this.isValidCell(row, col) &&
+        this.playerBoard[row][col].ship === null
+      ) {
+        console.log(`Placing ship at (${row}, ${col})`);
+        const partId = `${row}-${col}`;
+        const part = new ShipPart(this.selectedShip.id, partId, false);
+        this.playerBoard[row][col].setPart(part);
+        this.playerBoard[row][col].ship = this.selectedShip;
+        this.selectedShip.addPart(partId);
+
+        this.shipPlacementCount++;
+        if (this.shipPlacementCount === this.selectedShip.length) {
+          console.log(`Ship ${this.selectedShip.name} fully placed.`);
+          this.selectedShip = null;
+          this.currentShipIndex++;
+        }
+      } else {
+        console.log('Cell already occupied');
+      }
+    } else {
+      console.log('Ship already fully placed.');
+    }
+  }
+  canPlaceShipHorizontally(row: number, col: number, ship: Ship): boolean {
+    if (col + ship.length > this.width) return false;
+    for (let i = 0; i < ship.length; i++) {
+      if (this.playerBoard[row][col + i].ship !== null) {
+        return false;
       }
     }
-    console.log('Board initialized:', board);
+    return true;
   }
 
-  placeShips(board: any[][]) {
-    console.log('>>>>');
-    this.ships.forEach((ship) => {
-      const length = ship.length;
-      const row = Math.floor(Math.random() * 8);
-      const col = Math.floor(Math.random() * (8 - length + 1));
-      for (let i = 0; i < length; i++) {
-        board[row][col + i].shipId = ship.id;
+  placeShipHorizontally(row: number, col: number, ship: Ship): void {
+    for (let i = 0; i < ship.length; i++) {
+      const partId = `${row}-${col + i}`;
+      const part = new ShipPart(ship.id, partId, false);
+      this.playerBoard[row][col + i].ship = ship;
+      this.playerBoard[row][col + i].setPart(part);
+      ship.addPart(partId);
+    }
+  }
+
+  canPlaceShipVertycally(row: number, col: number, ship: Ship): boolean {
+    if (row + ship.length > this.height) return false;
+    for (let i = 0; i < ship.length; i++) {
+      if (this.playerBoard[row + i][col].ship !== null) {
+        return false;
       }
-    });
-    console.log('Ships placed:', board);
+    }
+    return true;
+  }
+
+  placeShipvertically(row: number, col: number, ship: Ship): void {
+    for (let i = 0; i < ship.length; i++) {
+      const partId = `${row + i}-${col}`;
+      const part = new ShipPart(ship.id, partId, false);
+      this.playerBoard[row + i][col].ship = ship;
+      this.playerBoard[row + i][col].setPart(part);
+      ship.addPart(partId);
+    }
+  }
+
+  isValidCell(row: number, col: number): boolean {
+    return row >= 0 && row < this.height && col >= 0 && col < this.width;
   }
 
   isStartGame = true;
-
-  ngOnInit() {}
-
   start() {
     this.isStartGame = !this.isStartGame;
   }
 
-  onDrop(event: CdkDragDrop<any[]>) {
-    if (event.previousContainer !== event.container) {
-      const droppedShip: Ship = event.item.data;
-      const targetRowIndex = this.playerBoard.indexOf(event.container.data);
-      const targetCellIndex = event.currentIndex;
-
-      // Check if the ship fits horizontally within the target row
-      if (
-        targetCellIndex + droppedShip.length <=
-        this.playerBoard[targetRowIndex].length
-      ) {
-        let canPlaceHorizontally = true;
-        for (let i = 0; i < droppedShip.length; i++) {
-          const currentCell =
-            this.playerBoard[targetRowIndex][targetCellIndex + i];
-          if (currentCell.shipId !== null) {
-            canPlaceHorizontally = false;
-            break;
-          }
-        }
-
-        // Place the ship if it fits horizontally
-        if (canPlaceHorizontally) {
-          for (let i = 0; i < droppedShip.length; i++) {
-            this.playerBoard[targetRowIndex][targetCellIndex + i].shipId =
-              droppedShip.id;
-          }
-          this.ships = this.ships.filter((ship) => ship.id !== droppedShip.id);
-          return;
-        }
-      } else {
-        console.log('Ship does not fit horizontally');
-      }
-
-      // Check if the ship fits vertically within the column
-      if (targetRowIndex + droppedShip.length <= this.playerBoard.length) {
-        let canPlaceVertically = true;
-        for (let i = 0; i < droppedShip.length; i++) {
-          const currentRow = targetRowIndex + i;
-          const currentCell = this.playerBoard[currentRow][targetCellIndex];
-          if (currentCell.shipId !== null) {
-            canPlaceVertically = false;
-            break;
-          }
-        }
-
-        // Place the ship if it fits vertically
-        if (canPlaceVertically) {
-          for (let i = 0; i < droppedShip.length; i++) {
-            const currentRow = targetRowIndex + i;
-            this.playerBoard[currentRow][targetCellIndex].shipId =
-              droppedShip.id;
-          }
-          this.ships = this.ships.filter((ship) => ship.id !== droppedShip.id);
-          return;
-        }
-      } else {
-        console.log('Ship does not fit vertically');
-      }
-    }
-    console.log(event);
-    console.log('Updated playerBoard:', this.playerBoard);
+  flip() {
+    this.angle = this.angle === 0 ? 90 : 0;
+    console.log(`Ship rotation angle: ${this.angle}`);
   }
-
-  flip() {}
 }

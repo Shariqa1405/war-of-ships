@@ -1,17 +1,12 @@
 <div class="container boards">
   <div class="row">
     <div class="col-md-6">
-      <table class="player" cdkDropListGroup>
-        <tr
-          *ngFor="let row of playerBoard"
-          cdkDropList
-          (cdkDropListDropped)="onDrop($event)"
-        >
+      <table class="player">
+        <tr *ngFor="let row of playerBoard; let rowIndex = index">
           <td
-            *ngFor="let cell of row"
-            [ngClass]="{ 'ship-cell': cell.shipId !== null }"
-            cdkDropList
-            (cdkDropListDropped)="onDrop($event)"
+            *ngFor="let cell of row; let colIndex = index"
+            [ngClass]="{ 'ship-cell': cell.ship !== null }"
+            (click)="placeShip(rowIndex, colIndex)"
           >
             &nbsp;
           </td>
@@ -23,7 +18,7 @@
         <tr *ngFor="let row of computerBoard">
           <td
             *ngFor="let cell of row"
-            [ngClass]="{ 'ship-cell': cell.shipId !== null }"
+            [ngClass]="{ 'ship-cell': cell.ship !== null }"
           >
             &nbsp;
           </td>
@@ -33,19 +28,17 @@
   </div>
 </div>
 
-<div
-  class="ships-container"
-  cdkDropList
-  [cdkDropListData]="ships"
-  (cdkDropListDropped)="onDrop($event)"
->
-  <div
-    *ngFor="let ship of ships"
-    class="ships"
-    [ngClass]="ship.name"
-    cdkDrag
-    [cdkDragData]="ship"
-  ></div>
+<div class="ships-container">
+  <div *ngIf="currentShipIndex < ships.length" ngClass="ships-list">
+    <div
+      *ngFor="let ship of ships; let i = index"
+      class="ships"
+      [ngClass]="ship.name"
+      (click)="selectShip(ship)"
+      [class.selected]="selectedShip === ship"
+      [ngStyle]="{ transform: 'rotate(' + angle + 'deg)' }"
+    ></div>
+  </div>
 </div>
 
 <div class="container">
@@ -54,11 +47,11 @@
       <button
         class="btn btn-info"
         [disabled]="!this.isStartGame"
-        (click)="(start)"
+        (click)="start()"
       >
         start
       </button>
-      <button class="btn btn-info flip" (click)="(flip)">Flip The Ship</button>
+      <button class="btn btn-info flip" (click)="flip()">Flip The Ship</button>
     </div>
   </div>
 </div>

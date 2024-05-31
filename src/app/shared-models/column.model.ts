@@ -12,6 +12,10 @@ export class Column {
   }
 
   setPart(part: ShipPart) {
+    if (this.part !== null) {
+      console.log('Replacing existing part in the column.');
+      this.part = null;
+    }
     this.part = part;
   }
 
