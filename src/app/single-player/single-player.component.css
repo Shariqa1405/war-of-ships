@@ -1,27 +1,27 @@
 .player td,
 .computer td {
-  width: 50px;
-  height: 50px;
-  border: 1px solid black;
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
 }
 .player,
 .computer {
-  border-collapse: collapse;
+    border-collapse: collapse;
 }
 .boards {
-  display: flex;
-  align-items: center;
-  height: 100vh;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    justify-content: center;
 }
 .buttons {
-  margin-top: -100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    margin-top: -100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .flip {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 /* .port-container {
   position: relative;
@@ -38,43 +38,43 @@
 } */
 
 .ships-container {
-  box-sizing: border-box;
-  height: 400px;
-  width: 200px;
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  left: 20px;
-  top: 20%;
-  border-width: 20px;
+    box-sizing: border-box;
+    height: 400px;
+    width: 200px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 20px;
+    top: 20%;
+    border-width: 20px;
 }
 
 .ship1 {
-  width: 50px;
-  height: 100px;
-  background-color: black;
+    width: 50px;
+    height: 100px;
+    background-color: black;
 }
 .ship2 {
-  width: 50px;
-  height: 150px;
-  background-color: purple;
+    width: 50px;
+    height: 150px;
+    background-color: purple;
 }
 .ship3 {
-  width: 50px;
-  height: 200px;
-  background-color: pink;
+    width: 50px;
+    height: 200px;
+    background-color: pink;
 }
 .ship4 {
-  width: 50px;
-  height: 250px;
-  background-color: lightblue;
+    width: 50px;
+    height: 250px;
+    background-color: lightblue;
 }
 .ship5 {
-  width: 50px;
-  height: 250px;
-  background-color: cyan;
+    width: 50px;
+    height: 250px;
+    background-color: cyan;
 }
 
 .ship-cell {
-  background-color: blue;
+    background-color: blue;
 }

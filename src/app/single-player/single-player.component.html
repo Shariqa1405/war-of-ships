@@ -1,57 +1,57 @@
 <div class="container boards">
-  <div class="row">
-    <!-- <div class="ship-info">
+    <div class="row">
+        <!-- <div class="ship-info">
       <p>{{ ships }}</p>
     </div> -->
-    <div class="col-md-6">
-      <table class="player">
-        <tr *ngFor="let row of playerBoard; let rowIndex = index">
-          <td
-            *ngFor="let cell of row; let colIndex = index"
-            [ngClass]="{ 'ship-cell': cell.ship }"
-            (click)="columnClick(cell.id)"
-            [id]="cell.id"
-          ></td>
-        </tr>
-      </table>
+        <div class="col-md-6">
+            <table class="player">
+                <tr *ngFor="let row of playerBoard; let rowIndex = index">
+                    <td
+                        *ngFor="let cell of row; let colIndex = index"
+                        [ngClass]="{ 'ship-cell': cell.ship }"
+                        (click)="columnClick(cell.id)"
+                        [id]="cell.id"
+                    ></td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <table class="computer">
+                <tr *ngFor="let row of computerBoard">
+                    <td
+                        *ngFor="let cell of row"
+                        [ngClass]="{ 'ship-cell': cell.ship !== null }"
+                    >
+                        &nbsp;
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
-    <div class="col-md-6">
-      <table class="computer">
-        <tr *ngFor="let row of computerBoard">
-          <td
-            *ngFor="let cell of row"
-            [ngClass]="{ 'ship-cell': cell.ship !== null }"
-          >
-            &nbsp;
-          </td>
-        </tr>
-      </table>
-    </div>
-  </div>
 </div>
 
 <div class="ships-container">
-  <div *ngIf="currentShipIndex < ships.length" ngClass="ships-list">
-    <div
-      *ngFor="let ship of ships; let i = index"
-      class="ships"
-      [ngClass]="ship.name"
-      (click)="selectShip(ship)"
-      [class.selected]="selectedShip === ship"
-    ></div>
-  </div>
+    <div *ngIf="currentShipIndex < ships.length" ngClass="ships-list">
+        <div
+            *ngFor="let ship of ships; let i = index"
+            class="ships"
+            [ngClass]="ship.name"
+            (click)="selectShip(ship)"
+            [class.selected]="selectedShip === ship"
+        ></div>
+    </div>
 </div>
 
 <div class="container">
-  <div class="row buttons">
-    <div class="col-xs-12">
-      <button
-        class="btn btn-info"
-        [disabled]="!this.isStartGame"
-        (click)="start()"
-      >
-        start
-      </button>
+    <div class="row buttons">
+        <div class="col-xs-12">
+            <button
+                class="btn btn-info"
+                [disabled]="!this.isStartGame"
+                (click)="start()"
+            >
+                start
+            </button>
+        </div>
     </div>
-  </div>
 </div>
