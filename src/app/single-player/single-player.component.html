@@ -1,15 +1,17 @@
 <div class="container boards">
   <div class="row">
+    <!-- <div class="ship-info">
+      <p>{{ ships }}</p>
+    </div> -->
     <div class="col-md-6">
       <table class="player">
         <tr *ngFor="let row of playerBoard; let rowIndex = index">
           <td
             *ngFor="let cell of row; let colIndex = index"
-            [ngClass]="{ 'ship-cell': cell.ship !== null }"
-            (click)="placeShip(rowIndex, colIndex)"
-          >
-            &nbsp;
-          </td>
+            [ngClass]="{ 'ship-cell': cell.ship }"
+            (click)="columnClick(cell.id)"
+            [id]="cell.id"
+          ></td>
         </tr>
       </table>
     </div>
@@ -36,7 +38,6 @@
       [ngClass]="ship.name"
       (click)="selectShip(ship)"
       [class.selected]="selectedShip === ship"
-      [ngStyle]="{ transform: 'rotate(' + angle + 'deg)' }"
     ></div>
   </div>
 </div>
@@ -51,7 +52,6 @@
       >
         start
       </button>
-      <button class="btn btn-info flip" (click)="flip()">Flip The Ship</button>
     </div>
   </div>
 </div>
