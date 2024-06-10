@@ -21,13 +21,4 @@ export class Column {
     get isEmpty(): boolean {
         return this.part ? false : true;
     }
-
-    // isEmpty(part: null) {
-    //   this.part = part;
-    //   if (this.part === null && this.ship === null) {
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // }
 }

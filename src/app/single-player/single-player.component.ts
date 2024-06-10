@@ -19,12 +19,7 @@ enum GameState {
     styleUrl: './single-player.component.css',
 })
 export class SinglePlayerComponent implements OnInit {
-    constructor(private boardsService: BoardsService) {
-        // this.initBoard('player');
-        // this.initData('player');
-        // this.initBoard('computer');
-        // this.initData('computer');
-    }
+    constructor(private boardsService: BoardsService) {}
 
     private _columnsMap: Map<string, Column> = new Map();
 
@@ -36,8 +31,6 @@ export class SinglePlayerComponent implements OnInit {
 
     // TODO... set initial state to Pending
     private _gameState: GameState = GameState.Preparing;
-
-    isStartGame = true;
 
     currentShipIndex: number = 0;
 
@@ -102,11 +95,11 @@ export class SinglePlayerComponent implements OnInit {
     }
 
     ships: Ship[] = [
-        new Ship('ship1', 2, 1),
-        new Ship('ship2', 3, 2),
-        new Ship('ship3', 4, 3),
-        new Ship('ship4', 5, 4),
-        new Ship('ship5', 5, 5),
+        new Ship('Fulton', 2, 1),
+        new Ship('Clermont', 3, 2),
+        new Ship('Argo', 4, 3),
+        new Ship('Dreadnought', 5, 4),
+        new Ship('Titanic', 5, 5),
     ];
 
     ngOnInit() {
@@ -133,30 +126,6 @@ export class SinglePlayerComponent implements OnInit {
         this.shipPlacementCount = 0;
         console.log('Selected ship:', ship);
     }
-
-    // private _placeShip(id: string, ship: Ship) {
-    //   console.log(`placing ship on ${id})`);
-
-    //   if (!this.selectedShip) {
-    //     console.log('No ship selected or ship already fully placed.');
-    //     return;
-    //   }
-
-    //   if (this.shipPlacementCount < this.selectedShip.length) {
-    //     const partId = uuid();
-    //     const part = new ShipPart(this.selectedShip.id, partId, false);
-    //     const column = this._columnsMap.get(id);
-    //     if (column.isEmpty) {
-    //       column.setPart(part);
-    //       column.ship = ship;
-    //       this.shipPlacementCount++;
-    //     } else {
-    //       console.log('Cell already occupied');
-    //     }
-    //   } else {
-    //     console.log('Ship already fully placed.');
-    //   }
-    // }
 
     private getPositionFromUUID(id: string): [number, number] | null {
         const allIds = Array.from(this._columnsMap.keys());
@@ -261,7 +230,8 @@ export class SinglePlayerComponent implements OnInit {
         console.log(id, this._columnsMap.get(id));
     }
 
-    start() {
-        this.isStartGame = !this.isStartGame;
-    }
+    // isStartGame = true;
+    // start() {
+    //     this.isStartGame = !this.isStartGame;
+    // }
 }

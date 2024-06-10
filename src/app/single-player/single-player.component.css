@@ -49,27 +49,27 @@
     border-width: 20px;
 }
 
-.ship1 {
+.Fulton {
     width: 50px;
     height: 100px;
     background-color: black;
 }
-.ship2 {
+.Clermont {
     width: 50px;
     height: 150px;
     background-color: purple;
 }
-.ship3 {
+.Argo {
     width: 50px;
     height: 200px;
     background-color: pink;
 }
-.ship4 {
+.Dreadnought {
     width: 50px;
     height: 250px;
     background-color: lightblue;
 }
-.ship5 {
+.Titanic {
     width: 50px;
     height: 250px;
     background-color: cyan;

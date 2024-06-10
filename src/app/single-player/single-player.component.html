@@ -1,8 +1,9 @@
 <div class="container boards">
     <div class="row">
-        <!-- <div class="ship-info">
-      <p>{{ ships }}</p>
-    </div> -->
+        <div class="ship-info" *ngIf="selectedShip">
+            <p>Name: {{ selectedShip.name }}</p>
+            <p>Lenght: {{ selectedShip.length }}</p>
+        </div>
         <div class="col-md-6">
             <table class="player">
                 <tr *ngFor="let row of playerBoard; let rowIndex = index">
@@ -42,7 +43,7 @@
     </div>
 </div>
 
-<div class="container">
+<!-- <div class="container">
     <div class="row buttons">
         <div class="col-xs-12">
             <button
@@ -54,4 +55,4 @@
             </button>
         </div>
     </div>
-</div>
+</div> -->
