@@ -122,12 +122,22 @@ export class SinglePlayerComponent implements OnInit {
     }
 
     selectShip(ship: Ship) {
+        if (this.selectedShip && this.shipPlacementCount > 0) {
+            console.log(
+                'Please finish placing the current ship before selecting another.'
+            );
+            return;
+        }
         this.selectedShip = ship;
         this.shipPlacementCount = 0;
         console.log('Selected ship:', ship);
     }
 
-    private getPositionFromUUID(id: string): [number, number] | null {
+    shipDisable(): boolean {
+        return this.selectedShip && this.shipPlacementCount > 0;
+    }
+
+    private _getPositionFromUUID(id: string): [number, number] | null {
         const allIds = Array.from(this._columnsMap.keys());
         const index = allIds.indexOf(id);
         if (index === -1) return null;
@@ -137,8 +147,8 @@ export class SinglePlayerComponent implements OnInit {
     }
 
     private areIdsAdjacent(id1: string, id2: string): boolean {
-        const pos1 = this.getPositionFromUUID(id1);
-        const pos2 = this.getPositionFromUUID(id2);
+        const pos1 = this._getPositionFromUUID(id1);
+        const pos2 = this._getPositionFromUUID(id2);
         if (!pos1 || !pos2) return false;
 
         const [row1, col1] = pos1;
@@ -167,7 +177,7 @@ export class SinglePlayerComponent implements OnInit {
 
     private _placeShip(id: string, ship: Ship | null): boolean {
         if (!ship) {
-            console.log('No ship selected');
+            console.log('ship is not selected');
             return false;
         }
 

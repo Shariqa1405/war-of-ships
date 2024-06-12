@@ -1,15 +1,27 @@
 <div class="container boards">
     <div class="row">
-        <div class="ship-info" *ngIf="selectedShip">
-            <p>Name: {{ selectedShip.name }}</p>
-            <p>Lenght: {{ selectedShip.length }}</p>
+        <div class="ship-info">
+            <p>
+                Name: <span *ngIf="selectedShip">{{ selectedShip.name }}</span>
+            </p>
+            <p>
+                Lenght:<span *ngIf="selectedShip">
+                    {{ selectedShip.length }}</span
+                >
+            </p>
         </div>
         <div class="col-md-6">
             <table class="player">
                 <tr *ngFor="let row of playerBoard; let rowIndex = index">
                     <td
                         *ngFor="let cell of row; let colIndex = index"
-                        [ngClass]="{ 'ship-cell': cell.ship }"
+                        [ngClass]="{ 'ship-cell': cell.ship,
+                            'Fulton':cell.ship?.name==='Fulton',
+                            'Clermont':cell.ship?.name==='Clermont',
+                            'Argo':cell.ship?.name==='Argo',
+                            'Dreadnought':cell.ship?.name==='Dreadnought',
+                            'Titanic':cell.ship?.name==='Titanic',
+                         }"
                         (click)="columnClick(cell.id)"
                         [id]="cell.id"
                     ></td>
