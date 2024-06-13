@@ -20,9 +20,7 @@
     align-items: center;
     justify-content: center;
 }
-.flip {
-    margin-left: 10px;
-}
+
 /* .port-container {
   position: relative;
   width: 100%;
@@ -37,7 +35,7 @@
   transform-origin: top right;
 } */
 
-.ships-container {
+/* .ships-container {
     box-sizing: border-box;
     height: 400px;
     width: 200px;
@@ -47,32 +45,44 @@
     left: 20px;
     top: 20%;
     border-width: 20px;
+} */
+.ships-container {
+    display: flex;
+    justify-content: center;
+}
+.ships-list {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
 }
 
 .Fulton {
     width: 50px;
-    height: 100px;
+    height: 50px;
     background-color: black;
 }
 .Clermont {
     width: 50px;
-    height: 150px;
+    height: 50px;
     background-color: purple;
 }
 .Argo {
     width: 50px;
-    height: 200px;
+    height: 50px;
     background-color: pink;
 }
 .Dreadnought {
     width: 50px;
-    height: 250px;
+    height: 50px;
     background-color: lightblue;
 }
 .Titanic {
     width: 50px;
-    height: 250px;
+    height: 50px;
     background-color: cyan;
+}
+.selected {
+    background-color: red;
 }
 
 /* .ship-cell {
