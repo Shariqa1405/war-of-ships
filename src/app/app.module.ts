@@ -13,35 +13,39 @@ import { HowToPlayComponent } from './how-to-play/how-to-play.component';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './auth/auth.component';
 import { CleanComponent } from './clean/clean.component';
+import { ComputerComponent } from './single-player/computer/computer.component';
+import { PlayerComponent } from './single-player/player/player.component';
 
 const routes: Routes = [
-  { path: '', component: GameInfoComponent },
-  { path: 'SinglePlayer', component: SinglePlayerComponent },
-  { path: 'MultiPlayer', component: MultiplayerComponent },
-  { path: 'How To Play', component: HowToPlayComponent },
-  { path: 'Auth', component: AuthComponent },
+    { path: '', component: GameInfoComponent },
+    { path: 'SinglePlayer', component: SinglePlayerComponent },
+    { path: 'MultiPlayer', component: MultiplayerComponent },
+    { path: 'How To Play', component: HowToPlayComponent },
+    { path: 'Auth', component: AuthComponent },
 ];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    GameInfoComponent,
-    LoginSigninComponent,
-    SinglePlayerComponent,
-    MultiplayerComponent,
-    HowToPlayComponent,
-    CleanComponent,
-    AuthComponent,
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(routes),
-    HttpClientModule,
-    DragDropModule,
-  ],
-  providers: [],
-  bootstrap: [AppComponent],
+    declarations: [
+        AppComponent,
+        GameInfoComponent,
+        LoginSigninComponent,
+        SinglePlayerComponent,
+        MultiplayerComponent,
+        HowToPlayComponent,
+        CleanComponent,
+        AuthComponent,
+        ComputerComponent,
+        PlayerComponent,
+    ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule.forRoot(routes),
+        HttpClientModule,
+        DragDropModule,
+    ],
+    providers: [],
+    bootstrap: [AppComponent],
 })
 export class AppModule {}
