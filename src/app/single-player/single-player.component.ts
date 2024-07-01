@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Ship, ShipPart } from '../shared-models/ships.model';
 import { Column } from '../shared-models/column.model';
 import { v4 as uuid } from 'uuid';
-import { BoardsService } from '../sharedServices/Boards.service';
-
 // import { BoardsService } from '../sharedServices/boards.service';
 
 enum GameState {
@@ -19,7 +17,7 @@ enum GameState {
     styleUrl: './single-player.component.css',
 })
 export class SinglePlayerComponent implements OnInit {
-    constructor(private boardsService: BoardsService) {}
+    constructor() {}
 
     private _columnsMap: Map<string, Column> = new Map();
 
@@ -66,7 +64,6 @@ export class SinglePlayerComponent implements OnInit {
         for (let row = 0; row < this.boards.length; row++) {
             for (let c = 0; c < this.boards[row].length; c++) {
                 const id = uuid();
-                // const id = this.boards[row][c];
                 const column = new Column(id, null);
 
                 map.set(id, column);
@@ -104,7 +101,6 @@ export class SinglePlayerComponent implements OnInit {
 
     ngOnInit() {
         this.initializeBoard(this.playerBoard);
-        this.initializeBoard(this.computerBoard);
     }
 
     initializeBoard(board: Column[][]) {
@@ -218,7 +214,8 @@ export class SinglePlayerComponent implements OnInit {
         }
     }
 
-    columnClick(id: string) {
+    columnClick(id: string, Cell?) {
+        console.log('cell', Cell);
         switch (this._gameState) {
             case GameState.Pending:
                 console.log('game not started yet');
@@ -240,8 +237,23 @@ export class SinglePlayerComponent implements OnInit {
         console.log(id, this._columnsMap.get(id));
     }
 
-    // isStartGame = true;
-    // start() {
-    //     this.isStartGame = !this.isStartGame;
+    allShipsPlaced(): boolean {
+        return this.placedShips.size === this.ships.length;
+    }
+    // disableButton(): boolean {
+    //     if (this.allShipsPlaced()) {
+    //         this._gameState === GameState.Battle;
+    //         console.log('Game Started', GameState.Battle);
+    //         return this.isStartGame;
+    //     }
+    //     if (!this.allShipsPlaced()) {
+    //         this._gameState !== GameState.Pending;
+    //         return !this.isStartGame;
+    //     }
     // }
+
+    isStartGame = true;
+    start() {
+        this.isStartGame = !this.isStartGame;
+    }
 }

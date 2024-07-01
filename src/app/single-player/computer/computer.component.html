@@ -1,1 +1,12 @@
-<p>computer works!</p>
+<div>
+    <table class="computer">
+        <tr *ngFor="let row of computerBoard">
+            <td
+                *ngFor="let cell of row"
+                [ngClass]="{ 'ship-cell': cell.ship !== null }"
+            >
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</div>

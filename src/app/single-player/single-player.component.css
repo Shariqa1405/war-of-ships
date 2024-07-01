@@ -1,5 +1,4 @@
-.player td,
-.computer td {
+.player td {
     width: 50px;
     height: 50px;
     border: 1px solid black;
@@ -15,10 +14,10 @@
     justify-content: center;
 }
 .buttons {
-    margin-top: -100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: absolute;
+    display: block;
+    left: 0;
+    height: 100vh;
 }
 
 /* .port-container {
@@ -49,6 +48,7 @@
 .ships-container {
     display: flex;
     justify-content: center;
+    margin-top: -80px;
 }
 .ships-list {
     display: flex;
@@ -88,3 +88,14 @@
 /* .ship-cell {
     background-color: blue;
 } */
+
+.ship-info {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+}

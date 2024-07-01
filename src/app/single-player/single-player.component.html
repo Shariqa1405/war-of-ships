@@ -22,13 +22,16 @@
                             'Dreadnought':cell.ship?.name==='Dreadnought',
                             'Titanic':cell.ship?.name==='Titanic',
                          }"
-                        (click)="columnClick(cell.id)"
+                        (click)="columnClick(cell.id, playerBoard)"
                         [id]="cell.id"
                     ></td>
                 </tr>
             </table>
         </div>
         <div class="col-md-6">
+            <app-computer></app-computer>
+        </div>
+        <!-- <div class="col-md-6">
             <table class="computer">
                 <tr *ngFor="let row of computerBoard">
                     <td
@@ -39,6 +42,17 @@
                     </td>
                 </tr>
             </table>
+        </div> -->
+    </div>
+    <div class="row buttons">
+        <div class="col-xs-12">
+            <button
+                class="btn btn-info"
+                [disabled]="!this.isStartGame"
+                (click)="start()"
+            >
+                start
+            </button>
         </div>
     </div>
 </div>
@@ -55,16 +69,4 @@
     </div>
 </div>
 
-<!-- <div class="container">
-    <div class="row buttons">
-        <div class="col-xs-12">
-            <button
-                class="btn btn-info"
-                [disabled]="!this.isStartGame"
-                (click)="start()"
-            >
-                start
-            </button>
-        </div>
-    </div>
-</div> -->
+<div class="container"></div>
