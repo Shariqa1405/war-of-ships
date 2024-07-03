@@ -3,10 +3,28 @@
         <tr *ngFor="let row of computerBoard">
             <td
                 *ngFor="let cell of row"
-                [ngClass]="{ 'ship-cell': cell.ship !== null }"
+                [ngClass]="{
+                    'ship-cell': cell.ship,
+                    'ship-fulton': cell.ship?.name === 'Fulton',
+                    'ship-clermont': cell.ship?.name === 'Clermont',
+                    'ship-argo': cell.ship?.name === 'Argo',
+                    'ship-dreadnought': cell.ship?.name === 'Dreadnought',
+                    'ship-titanic': cell.ship?.name === 'Titanic'
+                }"
+                [id]="cell.id"
             >
                 &nbsp;
             </td>
         </tr>
     </table>
+
+    <!-- <div class="ships-container">
+        <div>
+            <div
+                *ngFor="let ship of ships; let i = index"
+                class="ships"
+                [ngClass]="ship.name"
+            ></div>
+        </div>
+    </div> -->
 </div>

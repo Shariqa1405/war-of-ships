@@ -237,9 +237,10 @@ export class SinglePlayerComponent implements OnInit {
         console.log(id, this._columnsMap.get(id));
     }
 
-    allShipsPlaced(): boolean {
-        return this.placedShips.size === this.ships.length;
-    }
+    // allShipsPlaced(): boolean {
+    //     return this.placedShips.size === this.ships.length;
+    // }
+
     // disableButton(): boolean {
     //     if (this.allShipsPlaced()) {
     //         this._gameState === GameState.Battle;

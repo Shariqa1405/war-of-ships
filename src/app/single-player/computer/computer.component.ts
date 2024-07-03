@@ -36,7 +36,7 @@ export class ComputerComponent implements OnInit {
 
     currentShipIndex: number = 0;
 
-    PlacingShip: Ship | null = null;
+    isPlaced: Ship | null = null;
     shipPlacementCount: number = 0;
 
     // alt
@@ -76,23 +76,6 @@ export class ComputerComponent implements OnInit {
         console.log('2222', this.boardsMap);
     }
 
-    // addPart(columnId: string, side: string) {
-    //     let board: Column[][];
-    //     if (side === 'player') {
-    //         board = this.playerBoard;
-    //     } else {
-    //         board = this.computerBoard;
-    //     }
-
-    //     const row = parseInt(columnId.split('-')[0]);
-    //     const col = parseInt(columnId.split('-')[1]);
-
-    //     const part = new ShipPart(null, columnId, false);
-    //     board[row][col].setPart(part);
-
-    //     console.log('77777', board);
-    // }
-
     initializeBoard(board: Column[][]) {
         for (let r = 0; r < this._height; r++) {
             const row: Column[] = [];
@@ -111,13 +94,12 @@ export class ComputerComponent implements OnInit {
     ngOnInit() {
         this.initializeBoard(this.computerBoard);
     }
+
     // TO DO
     // private _gameState: GameState = GameState.Preparing;
 
-    // TO DO
-
     shipDisable(): boolean {
-        return this.PlacingShip && this.shipPlacementCount > 0;
+        return this.isPlaced && this.shipPlacementCount > 0;
     }
 
     private _getPositionFromUUID(id: string): [number, number] | null {
@@ -144,11 +126,11 @@ export class ComputerComponent implements OnInit {
     }
 
     private isAdjacent(newId: string): boolean {
-        if (!this.PlacingShip || this.shipPlacementCount === 0) {
+        if (!this.isPlaced || this.shipPlacementCount === 0) {
             return true;
         }
 
-        for (const part of this.PlacingShip.parts.values()) {
+        for (const part of this.isPlaced.parts.values()) {
             if (this.areIdsAdjacent(part.columnId, newId)) {
                 return true;
             }
@@ -156,75 +138,85 @@ export class ComputerComponent implements OnInit {
         return false;
     }
 
-    placedShips: Set<string> = new Set();
-
+    placShips: Set<string> = new Set();
     setComputerShips() {
-        let possibleCoordinate = [];
-        let rndX;
-        let rndY;
         for (let ship of this.ships) {
-            rndX = this.randomIntFromInterval(0, 7);
-            rndY = this.randomIntFromInterval(0, 7);
-            for (let i = 1; i < ship.length; i++) {
-                if (rndY != 7) {
-                    possibleCoordinate.push(
-                        this.computerBoard[rndY + 1][rndX].id
-                    );
-                    console.log(
-                        '!=7 rndY+1',
-                        this.computerBoard[rndY + 1][rndX].id
-                    );
-                }
-                if (rndY != 0) {
-                    possibleCoordinate.push(
-                        this.computerBoard[rndY - 1][rndX].id
-                    );
-                    console.log(
-                        '!=0 rngY-1',
-                        this.computerBoard[rndY - 1][rndX].id
-                    );
-                }
+            let placed = false;
+            while (!placed) {
+                let rndX = this.randomIntFromInterval(0, this._width - 1);
+                let rndY = this.randomIntFromInterval(0, this._height - 1);
 
-                if (rndX != 7) {
-                    possibleCoordinate.push(
-                        this.computerBoard[rndY][rndX + 1].id
-                    );
-                    console.log(
-                        '!=7 rndX+1',
-                        this.computerBoard[rndY][rndX + 1].id
-                    );
-                }
+                // Check valid starting position
+                if (
+                    this.computerBoard[rndY][rndX].isEmpty &&
+                    this.isAdjacent(this.computerBoard[rndY][rndX].id)
+                ) {
+                    ship.addPart(this.computerBoard[rndY][rndX].id);
+                    this.computerBoard[rndY][rndX].ship = ship;
+                    this.shipPlacementCount++;
 
-                if (rndX != 0) {
-                    possibleCoordinate.push(
-                        this.computerBoard[rndY][rndX - 1].id
-                    );
                     console.log(
-                        '!=0 rndX-1',
-                        this.computerBoard[rndY][rndX - 1].id
+                        `ship${ship.name} at ${this.computerBoard[rndY][rndX].id}`
                     );
-                }
 
-                if (possibleCoordinate && !this._columnsMap.get)
-                    console.log('sadasd', this.computerBoard[rndY][rndX].id);
-                console.log('poss coordinate', possibleCoordinate);
-                let selectedItem = this.getRandomItem(possibleCoordinate);
-                console.log(`Selected Item: ${selectedItem}`);
+                    console.log((this.computerBoard[rndY][rndX].ship = ship));
+
+                    console.log(`ship ${ship.name} at (${rndX}, ${rndY})`);
+
+                    for (let i = 1; i < ship.length; i++) {
+                        let possibleCoordinates = [];
+
+                        if (
+                            rndY > 0 &&
+                            this.computerBoard[rndY - 1][rndX].isEmpty
+                        ) {
+                            possibleCoordinates.push(
+                                this.computerBoard[rndY - 1][rndX].id
+                            );
+                        }
+                        if (
+                            rndY < this._height - 1 &&
+                            this.computerBoard[rndY + 1][rndX].isEmpty
+                        ) {
+                            possibleCoordinates.push(
+                                this.computerBoard[rndY + 1][rndX].id
+                            );
+                        }
+                        if (
+                            rndX > 0 &&
+                            this.computerBoard[rndY][rndX - 1].isEmpty
+                        ) {
+                            possibleCoordinates.push(
+                                this.computerBoard[rndY][rndX - 1].id
+                            );
+                        }
+                        if (
+                            rndX < this._width - 1 &&
+                            this.computerBoard[rndY][rndX + 1].isEmpty
+                        ) {
+                            possibleCoordinates.push(
+                                this.computerBoard[rndY][rndX + 1].id
+                            );
+                        }
+
+                        if (possibleCoordinates.length > 0) {
+                            let selectedCoordinate =
+                                this.getRandomItem(possibleCoordinates);
+                            ship.addPart(selectedCoordinate);
+                            this._columnsMap.get(selectedCoordinate).ship =
+                                ship;
+                            this.shipPlacementCount++;
+                        }
+                    }
+
+                    placed = true;
+                }
             }
         }
     }
-    renderCoordinate(id: string) {
-        // Implement your rendering logic here
-        let column = this._columnsMap.get(id);
-        if (column) {
-            console.log(`Coordinate ${id} is empty: ${column.isEmpty}`);
-            // Render logic for UI or game display
-        }
-    }
 
-    getRandomItem(items: string[]): string {
-        const randomIndex = Math.floor(Math.random() * items.length);
-        return items[randomIndex];
+    getRandomItem<T>(items: T[]): T {
+        return items[Math.floor(Math.random() * items.length)];
     }
 
     generateRandomNumber(
@@ -256,17 +248,15 @@ export class ComputerComponent implements OnInit {
         return num;
     }
 
-    randomIntFromInterval(min, max) {
+    randomIntFromInterval(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
-    // TODO placing on random column
-    placingShips(ship: Ship) {}
 
     private _placeShip(id: string, ship: Ship): boolean {
-        // if (this.placedShips.has(ship.name)) {
-        //     console.log('ship already placed');
-        //     return false;
-        // }
+        if (this.placShips.has(ship.name)) {
+            console.log('ship already placed');
+            return false;
+        }
 
         const column = this._columnsMap.get(id);
         if (!column) {
@@ -287,8 +277,8 @@ export class ComputerComponent implements OnInit {
 
             if (this.shipPlacementCount === ship.length) {
                 console.log('Ship fully placed2:', ship.name);
-                this.PlacingShip = null;
-                this.placedShips.add(ship.name);
+                this.isPlaced = null;
+                this.placShips.add(ship.name);
             }
         }
     }
