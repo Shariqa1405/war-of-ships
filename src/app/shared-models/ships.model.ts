@@ -1,13 +1,14 @@
 export class Ship {
-    id: number;
     name: string;
     length: number;
+    id: number;
     parts: Map<string, ShipPart>;
 
     constructor(name: string, length: number, id: number) {
         this.name = name;
         this.length = length;
         this.id = id;
+        this.parts = new Map();
     }
 
     addPart(columnId: string, isDestroyed: boolean = false) {
@@ -16,6 +17,10 @@ export class Ship {
         }
 
         this.parts.set(columnId, new ShipPart(this.id, columnId, isDestroyed));
+    }
+
+    removePart(columnId: string) {
+        this.parts.delete(columnId);
     }
 
     isDestroyed() {

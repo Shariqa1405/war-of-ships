@@ -9,6 +9,7 @@
                     {{ selectedShip.length }}</span
                 >
             </p>
+            <p *ngIf="selectedShip">parts left: {{ remainingParts }}</p>
         </div>
         <div class="col-md-6">
             <table class="player">
@@ -31,30 +32,12 @@
         <div class="col-md-6">
             <app-computer></app-computer>
         </div>
-        <!-- <div class="col-md-6">
-            <table class="computer">
-                <tr *ngFor="let row of computerBoard">
-                    <td
-                        *ngFor="let cell of row"
-                        [ngClass]="{ 'ship-cell': cell.ship !== null }"
-                    >
-                        &nbsp;
-                    </td>
-                </tr>
-            </table>
-        </div> -->
     </div>
-    <div class="row buttons">
+    <!-- <div class="row buttons">
         <div class="col-xs-12">
-            <button
-                class="btn btn-info"
-                [disabled]="!this.isStartGame"
-                (click)="start()"
-            >
-                start
-            </button>
+            <button class="btn btn-info" (click)="start()">start</button>
         </div>
-    </div>
+    </div> -->
 </div>
 
 <div class="ships-container">
@@ -66,6 +49,13 @@
             (click)="selectShip(ship)"
             [class.selected]="selectedShip === ship"
         ></div>
+        <button
+            *ngIf="this.selectedShip"
+            class="btn btn-info"
+            (click)="removeShipPart(lastColumnClicked)"
+        >
+            back
+        </button>
     </div>
 </div>
 

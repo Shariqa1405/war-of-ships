@@ -34,6 +34,7 @@ export class SinglePlayerComponent implements OnInit {
 
     selectedShip: Ship | null = null;
     shipPlacementCount: number = 0;
+    remainingParts: number | null = null;
 
     angle: number = 0;
 
@@ -126,6 +127,7 @@ export class SinglePlayerComponent implements OnInit {
         }
         this.selectedShip = ship;
         this.shipPlacementCount = 0;
+        this.remainingParts = ship.length;
         console.log('Selected ship:', ship);
     }
 
@@ -195,6 +197,8 @@ export class SinglePlayerComponent implements OnInit {
             column.ship = ship;
             ship.addPart(id);
             this.shipPlacementCount++;
+            this.remainingParts--;
+
             console.log('Ship part placed:', id);
 
             console.log('Cell.ship:', column.ship);
@@ -203,6 +207,7 @@ export class SinglePlayerComponent implements OnInit {
                 console.log('Ship fully placed:', ship.name);
                 this.selectedShip = null;
                 this.placedShips.add(ship.name);
+                this.remainingParts = null;
             }
 
             return true;
@@ -214,7 +219,40 @@ export class SinglePlayerComponent implements OnInit {
         }
     }
 
+    lastColumnClicked: string | null = null;
+
+    removeShipPart(columnId: string | null) {
+        if (!columnId) {
+            console.log('No column ID provided.');
+            return;
+        }
+
+        const column = this._columnsMap.get(columnId);
+        if (!column || !column.ship || !this.selectedShip) {
+            console.log('no ShipPart to remove');
+            return;
+        }
+
+        const ship = column.ship;
+
+        if (!ship.parts || !ship.parts.has(columnId)) {
+            console.log('No ship part found in ship parts.');
+            return;
+        }
+
+        ship.removePart(columnId);
+        column.setPart(null);
+        column.ship = null;
+
+        this.shipPlacementCount--;
+        this.remainingParts++;
+
+        console.log(`ship ${ship.name}part removed from ${columnId} `);
+    }
+
     columnClick(id: string, Cell?) {
+        console.log('clicked column id:', id);
+        this.lastColumnClicked = id;
         console.log('cell', Cell);
         switch (this._gameState) {
             case GameState.Pending:
@@ -253,8 +291,7 @@ export class SinglePlayerComponent implements OnInit {
     //     }
     // }
 
-    isStartGame = true;
-    start() {
-        this.isStartGame = !this.isStartGame;
-    }
+    // start() {
+    //     this._gameState = GameState.Battle;
+    // }
 }
