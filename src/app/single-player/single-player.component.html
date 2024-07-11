@@ -49,11 +49,7 @@
             (click)="selectShip(ship)"
             [class.selected]="selectedShip === ship"
         ></div>
-        <button
-            *ngIf="this.selectedShip"
-            class="btn btn-info"
-            (click)="removeShipPart(lastColumnClicked)"
-        >
+        <button class="btn btn-info" (click)="removeLastPlacedPart()">
             back
         </button>
     </div>

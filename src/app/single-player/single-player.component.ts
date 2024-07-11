@@ -199,6 +199,8 @@ export class SinglePlayerComponent implements OnInit {
             this.shipPlacementCount++;
             this.remainingParts--;
 
+            this.placedShipParts.push(id);
+
             console.log('Ship part placed:', id);
 
             console.log('Cell.ship:', column.ship);
@@ -220,6 +222,18 @@ export class SinglePlayerComponent implements OnInit {
     }
 
     lastColumnClicked: string | null = null;
+    placedShipParts: string[] = [];
+
+    removeLastPlacedPart() {
+        if (this.placedShipParts.length === 0) {
+            console.log('no parts to remove');
+            return;
+        }
+        const lastPlacedId = this.placedShipParts.pop();
+        if (lastPlacedId) {
+            this.removeShipPart(lastPlacedId);
+        }
+    }
 
     removeShipPart(columnId: string | null) {
         if (!columnId) {
@@ -228,17 +242,12 @@ export class SinglePlayerComponent implements OnInit {
         }
 
         const column = this._columnsMap.get(columnId);
-        if (!column || !column.ship || !this.selectedShip) {
+        if (!column || !column.ship) {
             console.log('no ShipPart to remove');
             return;
         }
 
         const ship = column.ship;
-
-        if (!ship.parts || !ship.parts.has(columnId)) {
-            console.log('No ship part found in ship parts.');
-            return;
-        }
 
         ship.removePart(columnId);
         column.setPart(null);
