@@ -126,8 +126,8 @@ export class SinglePlayerComponent implements OnInit {
             return;
         }
         this.selectedShip = ship;
-        this.shipPlacementCount = 0;
-        this.remainingParts = ship.length;
+        this.shipPlacementCount = ship.parts.size;
+        this.remainingParts = ship.length - ship.parts.size;
         console.log('Selected ship:', ship);
     }
 
@@ -237,7 +237,6 @@ export class SinglePlayerComponent implements OnInit {
 
     removeShipPart(columnId: string | null) {
         if (!columnId) {
-            console.log('No column ID provided.');
             return;
         }
 
@@ -252,11 +251,15 @@ export class SinglePlayerComponent implements OnInit {
         ship.removePart(columnId);
         column.setPart(null);
         column.ship = null;
+        column.isEmpty = true;
 
         this.shipPlacementCount--;
         this.remainingParts++;
 
-        console.log(`ship ${ship.name}part removed from ${columnId} `);
+        console.log(`${ship.name}part removed from ${columnId} `);
+
+        this.selectedShip = ship;
+        this.placedShips.delete(ship.name);
     }
 
     columnClick(id: string, Cell?) {

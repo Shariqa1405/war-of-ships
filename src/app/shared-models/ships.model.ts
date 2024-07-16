@@ -38,6 +38,7 @@ export class ShipPart {
     shipId: number;
     columnId: string;
     isDestroyed: boolean;
+    columnUsed: boolean = false;
 
     constructor(shipId: number, columnId: string, isDestroyed: boolean) {
         this.shipId = shipId;
