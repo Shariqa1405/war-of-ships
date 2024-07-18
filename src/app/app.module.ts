@@ -14,7 +14,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './auth/auth.component';
 import { CleanComponent } from './clean/clean.component';
 import { ComputerComponent } from './single-player/computer/computer.component';
-import { PlayerComponent } from './single-player/player/player.component';
 
 const routes: Routes = [
     { path: '', component: GameInfoComponent },
@@ -35,7 +34,6 @@ const routes: Routes = [
         CleanComponent,
         AuthComponent,
         ComputerComponent,
-        PlayerComponent,
     ],
     imports: [
         BrowserModule,

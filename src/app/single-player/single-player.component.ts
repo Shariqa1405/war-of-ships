@@ -258,8 +258,24 @@ export class SinglePlayerComponent implements OnInit {
 
         console.log(`${ship.name}part removed from ${columnId} `);
 
-        this.selectedShip = ship;
+        // this.selectedShip = ship
+        this.resetSelectedShip(ship);
         this.placedShips.delete(ship.name);
+        // if (ship.parts.size === 0) {
+        //     this.placedShips.delete(ship.name);
+        //     this.selectedShip = null;
+        // }
+    }
+
+    private resetSelectedShip(ship: Ship | null) {
+        this.selectedShip = ship;
+        if (ship) {
+            this.shipPlacementCount = ship.parts.size;
+            this.remainingParts = ship.length - ship.parts.size;
+        } else {
+            this.shipPlacementCount = 0;
+            this.remainingParts = null;
+        }
     }
 
     columnClick(id: string, Cell?) {
@@ -271,7 +287,12 @@ export class SinglePlayerComponent implements OnInit {
                 console.log('game not started yet');
                 break;
             case GameState.Preparing:
-                this._placeShip(id, this.selectedShip);
+                if (this.selectedShip) {
+                    this._placeShip(id, this.selectedShip);
+                } else {
+                    console.log('no ship selected');
+                }
+
                 break;
             case GameState.Battle:
                 // TODO

@@ -82,7 +82,9 @@
     background-color: cyan;
 }
 .selected {
-    background-color: red;
+    /* background-color: red; */
+
+    border: 4px solid red;
 }
 
 /* .ship-cell {
@@ -98,4 +100,12 @@
     margin-left: auto;
     margin-right: auto;
     width: 200px;
+}
+
+.txt-inside {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 6px;
+    color: red;
 }

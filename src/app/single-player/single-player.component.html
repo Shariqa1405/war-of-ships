@@ -4,12 +4,12 @@
             <p>
                 Name: <span *ngIf="selectedShip">{{ selectedShip.name }}</span>
             </p>
-            <p>
+            <!-- <p>
                 Lenght:<span *ngIf="selectedShip">
                     {{ selectedShip.length }}</span
                 >
             </p>
-            <p *ngIf="selectedShip">parts left: {{ remainingParts }}</p>
+            <p *ngIf="selectedShip">parts left: {{ remainingParts }}</p> -->
         </div>
         <div class="col-md-6">
             <table class="player">
@@ -48,7 +48,11 @@
             [ngClass]="ship.name"
             (click)="selectShip(ship)"
             [class.selected]="selectedShip === ship"
-        ></div>
+        >
+            <div *ngIf="selectedShip === ship" class="txt-inside">
+                {{ selectedShip.length }}/{{ remainingParts }}
+            </div>
+        </div>
         <button class="btn btn-info" (click)="removeLastPlacedPart()">
             back
         </button>
