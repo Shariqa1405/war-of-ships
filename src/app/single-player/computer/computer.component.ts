@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Column } from '../../shared-models/column.model';
 import { Ship } from '../../shared-models/ships.model';
-import { ComputerBoardService } from '../../sharedServices/computer-board.service';
+import { ComputerBoardService } from '../../sharedServices/computerBoard.service';
+// import { BoardsService } from '../../sharedServices/playerBoards.service';
 
 @Component({
     selector: 'app-computer',
@@ -18,11 +19,16 @@ export class ComputerComponent implements OnInit {
     ];
 
     computerBoard: Column[][] = [];
+    // playerBoard: Column[][] = [];
 
-    constructor(private computerBoardService: ComputerBoardService) {}
+    constructor(
+        private computerBoardService: ComputerBoardService
+    ) // private PlayerBoardsService: BoardsService
+    {}
 
     ngOnInit() {
         this.computerBoard = this.computerBoardService.initializeBoard();
         this.computerBoardService.placeShips(this.computerBoard, this.ships);
+        // this.playerBoard = this.PlayerBoardsService.initalizeBoard();
     }
 }

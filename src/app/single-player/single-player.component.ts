@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Ship, ShipPart } from '../shared-models/ships.model';
 import { Column } from '../shared-models/column.model';
-import { BoardsService } from '../sharedServices/boards.service';
+import { BoardsService } from '../sharedServices/playerBoards.service';
 
 enum GameState {
     Pending,
@@ -74,7 +74,7 @@ export class SinglePlayerComponent implements OnInit {
 
     selectShip(ship: Ship) {
         if (this.placedShips.has(ship.name)) {
-            console.log(`${ship} is fully placed`);
+            console.log(`${ship.name} is fully placed`);
             return;
         }
 
@@ -153,8 +153,8 @@ export class SinglePlayerComponent implements OnInit {
                                 'Ship fully placed:',
                                 this.selectedShip.name
                             );
-                            this.selectedShip = null;
                             this.placedShips.add(this.selectedShip.name);
+                            this.selectedShip = null;
                             this.remainingParts = null;
                         }
                     } else {
@@ -175,9 +175,7 @@ export class SinglePlayerComponent implements OnInit {
                 console.log('unknown state');
         }
 
-        console.log(
-            console.log(id, this.boardsService.getColumnsMap().get(id))
-        );
+        console.log(id, this.boardsService.getColumnsMap().get(id));
     }
 
     // allShipsPlaced(): boolean {
