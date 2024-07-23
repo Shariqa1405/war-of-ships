@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Ship, ShipPart } from '../shared-models/ships.model';
 import { Column } from '../shared-models/column.model';
-import { BoardsService } from '../sharedServices/playerBoards.service';
+import { playerBoardsService } from '../sharedServices/playerBoards.service';
 
 enum GameState {
     Pending,
@@ -16,7 +16,7 @@ enum GameState {
     styleUrl: './single-player.component.css',
 })
 export class SinglePlayerComponent implements OnInit {
-    constructor(private boardsService: BoardsService) {}
+    constructor(private playerBoardsService: playerBoardsService) {}
 
     playerBoard: Column[][] = [];
     computerBoard: Column[][] = [];
@@ -69,7 +69,7 @@ export class SinglePlayerComponent implements OnInit {
     }
 
     initializeBoard() {
-        this.playerBoard = this.boardsService.initalizeBoard();
+        this.playerBoard = this.playerBoardsService.initalizeBoard();
     }
 
     selectShip(ship: Ship) {
@@ -101,7 +101,7 @@ export class SinglePlayerComponent implements OnInit {
         }
         const lastPlacedId = this.placedShipParts.pop();
         if (lastPlacedId) {
-            const result = this.boardsService.removeShipPart(
+            const result = this.playerBoardsService.removeShipPart(
                 lastPlacedId,
                 this.shipPlacementCount,
                 this.remainingParts,
@@ -135,7 +135,7 @@ export class SinglePlayerComponent implements OnInit {
                 break;
             case GameState.Preparing:
                 if (this.selectedShip) {
-                    const result = this.boardsService.placeShip(
+                    const result = this.playerBoardsService.placeShip(
                         id,
                         this.selectedShip,
                         this.shipPlacementCount,
@@ -175,7 +175,7 @@ export class SinglePlayerComponent implements OnInit {
                 console.log('unknown state');
         }
 
-        console.log(id, this.boardsService.getColumnsMap().get(id));
+        console.log(id, this.playerBoardsService.getColumnsMap().get(id));
     }
 
     // allShipsPlaced(): boolean {

@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { Ship, ShipPart } from '../shared-models/ships.model';
 
 @Injectable({ providedIn: 'root' })
-export class BoardsService {
+export class playerBoardsService {
     private _columnsMap: Map<string, Column> = new Map();
 
     private _width: number = 8;
