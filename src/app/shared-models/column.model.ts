@@ -5,15 +5,14 @@ export class Column {
     part: ShipPart;
     ship: Ship;
     neighbourColumns: Column[] = [];
-    array = [];
     public isEmpty: boolean;
+    hittedColumn = false;
 
     constructor(id: string, part?: ShipPart | null, ship?: Ship | null) {
         this.id = id;
         this.part = part;
         this.ship = ship;
         this.isEmpty = true;
-        // console.log(this.part, '1212');
     }
 
     setPart(part: ShipPart | null) {
@@ -23,5 +22,9 @@ export class Column {
             this.isEmpty = true;
         }
         this.part = part;
+    }
+
+    hitted() {
+        this.hittedColumn = true;
     }
 }

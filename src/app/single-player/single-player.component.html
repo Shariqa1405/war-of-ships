@@ -4,12 +4,6 @@
             <p>
                 Name: <span *ngIf="selectedShip">{{ selectedShip.name }}</span>
             </p>
-            <!-- <p>
-                Lenght:<span *ngIf="selectedShip">
-                    {{ selectedShip.length }}</span
-                >
-            </p>
-            <p *ngIf="selectedShip">parts left: {{ remainingParts }}</p> -->
         </div>
         <div class="col-md-6">
             <table class="player">
@@ -33,11 +27,6 @@
             <app-computer></app-computer>
         </div>
     </div>
-    <!-- <div class="row buttons">
-        <div class="col-xs-12">
-            <button class="btn btn-info" (click)="start()">start</button>
-        </div>
-    </div> -->
 </div>
 
 <div class="ships-container">
@@ -55,6 +44,13 @@
         </div>
         <button class="btn btn-info" (click)="removeLastPlacedPart()">
             back
+        </button>
+        <button
+            class="btn btn-info"
+            (click)="start()"
+            [disabled]="getState === gameBattle"
+        >
+            start
         </button>
     </div>
 </div>

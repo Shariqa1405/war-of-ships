@@ -2,12 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { Ship, ShipPart } from '../shared-models/ships.model';
 import { Column } from '../shared-models/column.model';
 import { playerBoardsService } from '../sharedServices/playerBoards.service';
+import { BoardServiceService } from '../sharedServices/board-service.service';
+import { MatchServiceService } from '../sharedServices/matchservice.service';
+import { ComputerBoardService } from '../sharedServices/computerBoard.service';
+import { ComputerComponent } from './computer/computer.component';
 
 enum GameState {
     Pending,
     Preparing,
     Battle,
     Finished,
+}
+enum Turn {
+    player,
+    computer,
 }
 
 @Component({
@@ -16,12 +24,19 @@ enum GameState {
     styleUrl: './single-player.component.css',
 })
 export class SinglePlayerComponent implements OnInit {
-    constructor(private playerBoardsService: playerBoardsService) {}
+    constructor(
+        private playerBoardsService: playerBoardsService,
+        private boardsService: BoardServiceService,
+        private matchService: MatchServiceService,
+        private computerService: ComputerBoardService
+    ) {}
 
     playerBoard: Column[][] = [];
     computerBoard: Column[][] = [];
 
     private _gameState: GameState = GameState.Preparing;
+    gameBattle: GameState = GameState.Battle;
+    gameFinished: GameState = GameState.Finished;
 
     currentShipIndex: number = 0;
 
@@ -33,11 +48,14 @@ export class SinglePlayerComponent implements OnInit {
     lastColumnClicked: string | null = null;
     placedShipParts: string[] = [];
 
-    // alt
     boardsMap: Map<string, Map<string, Column>> = new Map();
     boards: string[][] = [];
-    // player || computer
-    //
+
+    currTurn: Turn = Turn.player;
+
+    get getState(): GameState {
+        return this._gameState;
+    }
 
     addPart(columnId: string, side: string) {
         let board: Column[][];
@@ -65,11 +83,11 @@ export class SinglePlayerComponent implements OnInit {
     ];
 
     ngOnInit() {
-        this.initializeBoard();
+        this.playerBoard = this.boardsService.initalizeBoard();
     }
 
     initializeBoard() {
-        this.playerBoard = this.playerBoardsService.initalizeBoard();
+        this.playerBoard = this.boardsService.initalizeBoard();
     }
 
     selectShip(ship: Ship) {
@@ -126,9 +144,11 @@ export class SinglePlayerComponent implements OnInit {
     }
 
     columnClick(id: string, Cell?) {
-        console.log('clicked column id:', id);
+        if (this.currTurn !== Turn.player) {
+            console.log('not player Turn');
+            return;
+        }
         this.lastColumnClicked = id;
-        console.log('cell', Cell);
         switch (this._gameState) {
             case GameState.Pending:
                 console.log('game not started yet');
@@ -167,34 +187,70 @@ export class SinglePlayerComponent implements OnInit {
             case GameState.Battle:
                 // TODO
                 // implement game logic
+
                 break;
             case GameState.Finished:
-                console.log('the battle if finished');
+                console.log('the battle is finished');
                 break;
             default:
                 console.log('unknown state');
         }
 
-        console.log(id, this.playerBoardsService.getColumnsMap().get(id));
+        console.log(id, this.boardsService.getColumnsMap().get(id));
     }
 
-    // allShipsPlaced(): boolean {
-    //     return this.placedShips.size === this.ships.length;
+    // playerAttack(columnId: string) {
+    //     const result = this.matchService.hitOnColumn(
+    //         columnId,
+    //         this.computerBoard,
+    //         this.playerBoard
+    //     );
+
+    //     if (result.hit) {
+    //         console.log('hit');
+    //         if (result.shipDestroyed) {
+    //             console.log('ship is destroyed');
+    //         }
+    //     } else {
+    //         console.log('missed');
+    //     }
+    //     this.currTurn = Turn.computer;
+    //     this.computerTurn;
+    // }
+    // computerTurn() {
+    //     // if (this._gameState !== GameState.Battle) {
+    //     //     console.log('not in battle');
+    //     //     return;
+    //     // }
+    //     // const result = this.computerService.computerAttack(this.playerBoard);
+    //     // if (result.hit) {
+    //     //     if (result.shipDestroyed) {
+    //     //         console.log('ship is destroyed');
+    //     //     } else {
+    //     //         console.log('computer missied');
+    //     //     }
+    //     //     this.currTurn = Turn.player;
+    //     // }
     // }
 
-    // disableButton(): boolean {
-    //     if (this.allShipsPlaced()) {
-    //         this._gameState === GameState.Battle;
-    //         console.log('Game Started', GameState.Battle);
-    //         return this.isStartGame;
-    //     }
-    //     if (!this.allShipsPlaced()) {
-    //         this._gameState !== GameState.Pending;
-    //         return !this.isStartGame;
-    //     }
-    // }
+    // // allShipsPlaced(): boolean {
+    // //     return this.placedShips.size === this.ships.length;
+    // // }
 
-    // start() {
-    //     this._gameState = GameState.Battle;
-    // }
+    // // disableButton(): boolean {
+    // //     if (this.allShipsPlaced()) {
+    // //         this._gameState === GameState.Battle;
+    // //         console.log('Game Started', GameState.Battle);
+    // //         return this.isStartGame;
+    // //     }
+    // //     if (!this.allShipsPlaced()) {
+    // //         this._gameState !== GameState.Pending;
+    // //         return !this.isStartGame;
+    // //     }
+    // // }
+
+    start() {
+        this._gameState = GameState.Battle;
+        console.log('Game Started');
+    }
 }

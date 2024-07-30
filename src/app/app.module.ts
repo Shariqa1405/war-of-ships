@@ -14,6 +14,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthComponent } from './auth/auth.component';
 import { CleanComponent } from './clean/clean.component';
 import { ComputerComponent } from './single-player/computer/computer.component';
+import { ComputerBoardService } from './sharedServices/computerBoard.service';
 
 const routes: Routes = [
     { path: '', component: GameInfoComponent },
@@ -43,7 +44,7 @@ const routes: Routes = [
         HttpClientModule,
         DragDropModule,
     ],
-    providers: [],
+    providers: [ComputerBoardService],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

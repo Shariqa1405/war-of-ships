@@ -1,170 +1,114 @@
-import { Injectable } from '@angular/core';
-import { Column } from '../shared-models/column.model';
-import { v4 as uuid } from 'uuid';
-import { Ship, ShipPart } from '../shared-models/ships.model';
+import { Injectable, OnInit } from "@angular/core";
+import { Column } from "../shared-models/column.model";
+import { v4 as uuid } from "uuid";
+import { Ship, ShipPart } from "../shared-models/ships.model";
+import { BoardServiceService } from "./board-service.service";
+import { ComputerBoardService } from "./computerBoard.service";
 
-@Injectable({ providedIn: 'root' })
-export class playerBoardsService {
-    private _columnsMap: Map<string, Column> = new Map();
+@Injectable({ providedIn: "root" })
+export class playerBoardsService implements OnInit {
+  constructor(
+    private boardService: BoardServiceService
+  ) // private computerBoardService: ComputerBoardService
+  {}
+  ngOnInit() {}
 
-    private _width: number = 8;
-    private _height: number = 8;
-    constructor() {}
-
-    initalizeBoard(): Column[][] {
-        const board: Column[][] = [];
-        for (let r = 0; r < this._height; r++) {
-            const row: Column[] = [];
-            for (let c = 0; c < this._width; c++) {
-                const id = uuid();
-                const column = new Column(id);
-                this._columnsMap.set(column.id, column);
-                row.push(column);
-            }
-            board.push(row);
-        }
-        return board;
+  placeShip(
+    id: string,
+    ship: Ship | null,
+    shipPlacementCount: number,
+    remainingParts: number | null,
+    placedShips: Set<string>,
+    placedShipParts: string[]
+  ): {
+    success: boolean;
+    shipPlacementCount: number;
+    remainingParts: number | null;
+  } {
+    if (!ship) {
+      console.log("ship is not selected");
+      return { success: false, shipPlacementCount, remainingParts };
     }
 
-    getColumnsMap(): Map<string, Column> {
-        return this._columnsMap;
+    if (placedShips.has(ship.name)) {
+      console.log("ship already placed");
+      return { success: false, shipPlacementCount, remainingParts };
     }
 
-    private _getPositionFromUUID(id: string): [number, number] | null {
-        const allIds = Array.from(this._columnsMap.keys());
-        const index = allIds.indexOf(id);
-        if (index === -1) return null;
-        const row = Math.floor(index / this._width);
-        const col = index % this._width;
-        return [row, col];
+    const column = this.boardService.getColumnsMap().get(id);
+    if (!column) {
+      console.log("Invalid column ID");
+      return { success: false, shipPlacementCount, remainingParts };
     }
 
-    private areIdsAdjacent(id1: string, id2: string): boolean {
-        const pos1 = this._getPositionFromUUID(id1);
-        const pos2 = this._getPositionFromUUID(id2);
-        if (!pos1 || !pos2) return false;
+    if (
+      column.isEmpty &&
+      this.boardService.isAdjacent(id, ship, shipPlacementCount)
+    ) {
+      const partId = uuid();
+      const part = new ShipPart(ship.id, partId, false);
+      column.setPart(part);
+      column.ship = ship;
+      ship.addPart(id);
+      shipPlacementCount++;
+      remainingParts = remainingParts !== null ? remainingParts - 1 : null;
 
-        const [row1, col1] = pos1;
-        const [row2, col2] = pos2;
+      placedShipParts.push(id);
 
-        return (
-            (row1 === row2 && Math.abs(col1 - col2) === 1) ||
-            (col1 === col2 && Math.abs(row1 - row2) === 1)
-        );
+      console.log("Ship part placed:", id);
+
+      console.log("Cell.ship:", column.ship);
+
+      if (shipPlacementCount === ship.length) {
+        console.log("Ship fully placed:", ship.name);
+        placedShips.add(ship.name);
+        remainingParts = null;
+      }
+
+      return { success: true, shipPlacementCount, remainingParts };
+    } else {
+      console.log(
+        "Cannot place ship part here. Must be adjacent to the previous part."
+      );
+      return { success: false, shipPlacementCount, remainingParts };
+    }
+  }
+
+  removeShipPart(
+    columnId: string | null,
+    shipPlacementCount: number,
+    remainingParts: number | null,
+    placedShips: Set<string>,
+    selectedShip: Ship | null
+  ): {
+    shipPlacementCount: number;
+    remainingParts: number;
+    selectedShip: Ship | null;
+  } {
+    if (!columnId) {
+      return;
     }
 
-    private isAdjacent(
-        newId: string,
-        selectedShip: Ship | null,
-        shipPlacementCount: number
-    ): boolean {
-        if (!selectedShip || shipPlacementCount === 0) {
-            return true;
-        }
-
-        for (const part of selectedShip.parts.values()) {
-            if (this.areIdsAdjacent(part.columnId, newId)) {
-                return true;
-            }
-        }
-        return false;
+    const column = this.boardService.getColumnsMap().get(columnId);
+    if (!column || !column.ship) {
+      console.log("no ShipPart to remove");
+      return;
     }
 
-    placeShip(
-        id: string,
-        ship: Ship | null,
-        shipPlacementCount: number,
-        remainingParts: number | null,
-        placedShips: Set<string>,
-        placedShipParts: string[]
-    ): {
-        success: boolean;
-        shipPlacementCount: number;
-        remainingParts: number | null;
-    } {
-        if (!ship) {
-            console.log('ship is not selected');
-            return { success: false, shipPlacementCount, remainingParts };
-        }
+    const ship = column.ship;
 
-        if (placedShips.has(ship.name)) {
-            console.log('ship already placed');
-            return { success: false, shipPlacementCount, remainingParts };
-        }
+    ship.removePart(columnId);
+    column.setPart(null);
+    column.ship = null;
+    column.isEmpty = true;
 
-        const column = this._columnsMap.get(id);
-        if (!column) {
-            console.log('Invalid column ID');
-            return { success: false, shipPlacementCount, remainingParts };
-        }
+    shipPlacementCount--;
+    remainingParts = remainingParts !== null ? remainingParts + 1 : null;
 
-        if (column.isEmpty && this.isAdjacent(id, ship, shipPlacementCount)) {
-            const partId = uuid();
-            const part = new ShipPart(ship.id, partId, false);
-            column.setPart(part);
-            column.ship = ship;
-            ship.addPart(id);
-            shipPlacementCount++;
-            remainingParts =
-                remainingParts !== null ? remainingParts - 1 : null;
+    console.log(`${ship.name}part removed from ${columnId} `);
 
-            placedShipParts.push(id);
-
-            console.log('Ship part placed:', id);
-
-            console.log('Cell.ship:', column.ship);
-
-            if (shipPlacementCount === ship.length) {
-                console.log('Ship fully placed:', ship.name);
-                placedShips.add(ship.name);
-                remainingParts = null;
-            }
-
-            return { success: true, shipPlacementCount, remainingParts };
-        } else {
-            console.log(
-                'Cannot place ship part here. Must be adjacent to the previous part.'
-            );
-            return { success: false, shipPlacementCount, remainingParts };
-        }
-    }
-
-    removeShipPart(
-        columnId: string | null,
-        shipPlacementCount: number,
-        remainingParts: number | null,
-        placedShips: Set<string>,
-        selectedShip: Ship | null
-    ): {
-        shipPlacementCount: number;
-        remainingParts: number;
-        selectedShip: Ship | null;
-    } {
-        if (!columnId) {
-            return;
-        }
-
-        const column = this._columnsMap.get(columnId);
-        if (!column || !column.ship) {
-            console.log('no ShipPart to remove');
-            return;
-        }
-
-        const ship = column.ship;
-
-        ship.removePart(columnId);
-        column.setPart(null);
-        column.ship = null;
-        column.isEmpty = true;
-
-        shipPlacementCount--;
-        remainingParts = remainingParts !== null ? remainingParts + 1 : null;
-
-        console.log(`${ship.name}part removed from ${columnId} `);
-
-        selectedShip = ship;
-        // resetSelectedShip(ship);
-        placedShips.delete(ship.name);
-        return { shipPlacementCount, remainingParts, selectedShip };
-    }
+    selectedShip = ship;
+    placedShips.delete(ship.name);
+    return { shipPlacementCount, remainingParts, selectedShip };
+  }
 }
