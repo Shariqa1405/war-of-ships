@@ -9,9 +9,12 @@
                     'ship-clermont': cell.ship?.name === 'Clermont',
                     'ship-argo': cell.ship?.name === 'Argo',
                     'ship-dreadnought': cell.ship?.name === 'Dreadnought',
-                    'ship-titanic': cell.ship?.name === 'Titanic'
+                    'ship-titanic': cell.ship?.name === 'Titanic',
+                    hit: isHit(cell.id),
+                    missed: isMissed(cell.id)
                 }"
                 [id]="cell.id"
+                (click)="onColumnClick(cell.id)"
             >
                 &nbsp;
             </td>

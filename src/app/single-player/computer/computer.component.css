@@ -11,3 +11,9 @@
 .ship-cell {
     background-color: blue;
 }
+.hit {
+    background-color: red;
+}
+.missed {
+    background-color: gray;
+}

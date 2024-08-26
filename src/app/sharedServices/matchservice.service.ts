@@ -1,53 +1,64 @@
-import { forwardRef, Inject, Injectable, OnInit } from "@angular/core";
-import { playerBoardsService } from "./playerBoards.service";
+import { EventEmitter, Injectable, OnInit } from "@angular/core";
 import { ComputerBoardService } from "./computerBoard.service";
 import { BoardServiceService } from "./board-service.service";
 import { Ship } from "../shared-models/ships.model";
 import { Column } from "../shared-models/column.model";
+import { AttackService } from "./attack.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class MatchServiceService implements OnInit {
+  changeTurn: EventEmitter<string> = new EventEmitter<string>();
+
+  currTurn: "player" | "computer" = "player";
+  playerBoard: Column[][] = [];
+
   constructor(
-    // private playerBoardService: playerBoardsService,
     private boardsService: BoardServiceService,
-    // @Inject(forwardRef(() => ComputerBoardService))
-    private computerBoardService: ComputerBoardService
+    private computerBoardService: ComputerBoardService,
+    private attackService: AttackService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.playerBoard = this.boardsService.initalizeBoard();
+  }
 
   hitOnColumn(
     columnId: string,
     board: Column[][],
-    tragetBoard: Column[][]
+    targetBoard: Column[][]
   ): { hit: boolean; shipDestroyed: boolean } {
-    const column = this.boardsService.getColumnsMap().get(columnId);
+    console.log("Board before hit:", board);
+    console.log("Target Board (Player's board) before hit:", targetBoard);
+    // debugger;
+    const result = this.attackService.hitOnColumn(columnId, board);
 
-    if (!column) {
-      console.log("invaled");
-      return { hit: false, shipDestroyed: false };
-    }
+    console.log("Board after hit:", board);
+    console.log("Target Board (Player's board) after hit:", targetBoard);
 
-    if (column.ship) {
-      const shipPart = column.ship.parts.get(columnId);
-      if (shipPart) {
-        shipPart.isDestroyed = true;
-        column.hitted();
+    this.computerTurn(targetBoard);
+    return result;
+  }
 
-        console.log(`hit on ${columnId}. ${column.ship.name} part destroyed.`);
+  toggleTurn() {
+    this.currTurn = this.currTurn === "player" ? "computer" : "player";
+    this.changeTurn.emit(this.currTurn);
+  }
 
-        const shipDestroyed = column.ship.isDestroyed();
+  computerTurn(playerBoard: Column[][]) {
+    const result = this.computerBoardService.computerAttack(playerBoard);
 
-        return { hit: true, shipDestroyed };
-      } else {
-        console.log(`missed ${columnId}`);
-        return { hit: false, shipDestroyed: false };
+    if (result.hit) {
+      console.log("Computer hit a ship on the player's board!");
+      if (result.shipDestroyed) {
+        console.log("Computer destroyed a ship on the player's board!");
       }
     } else {
-      console.log(`missed ${columnId}`);
-      return { hit: false, shipDestroyed: false };
+      console.log("Computer missed on the player's board.");
     }
+
+    // Ensure turn toggles back to the player after the computer's move
+    this.toggleTurn();
   }
 }

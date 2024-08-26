@@ -8,9 +8,8 @@ import { ComputerBoardService } from "./computerBoard.service";
 @Injectable({ providedIn: "root" })
 export class playerBoardsService implements OnInit {
   constructor(
-    private boardService: BoardServiceService
-  ) // private computerBoardService: ComputerBoardService
-  {}
+    private boardService: BoardServiceService // private computerBoardService: ComputerBoardService
+  ) {}
   ngOnInit() {}
 
   placeShip(

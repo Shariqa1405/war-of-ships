@@ -3,6 +3,8 @@ export class Ship {
     length: number;
     id: number;
     parts: Map<string, ShipPart>;
+    hittedColumn = false;
+    missedColumn = false;
 
     constructor(name: string, length: number, id: number) {
         this.name = name;

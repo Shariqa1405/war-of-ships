@@ -139,3 +139,10 @@
     transform: skew(-10deg) translateY(8px);
     box-shadow: 0 0 0 var(--😀😀😀);
 }
+
+.hit {
+    background-color: red;
+}
+.missed {
+    background-color: gray;
+}

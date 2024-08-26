@@ -5,15 +5,18 @@ import { playerBoardsService } from '../sharedServices/playerBoards.service';
 import { BoardServiceService } from '../sharedServices/board-service.service';
 import { MatchServiceService } from '../sharedServices/matchservice.service';
 import { ComputerBoardService } from '../sharedServices/computerBoard.service';
-import { ComputerComponent } from './computer/computer.component';
+import {
+    GameState,
+    GameStateService,
+} from '../sharedServices/game-state.service';
 
-enum GameState {
-    Pending,
-    Preparing,
-    Battle,
-    Finished,
-}
-enum Turn {
+// export enum GameState {
+//     Pending,
+//     Preparing,
+//     Battle,
+//     Finished,
+// }
+export enum Turn {
     player,
     computer,
 }
@@ -28,15 +31,27 @@ export class SinglePlayerComponent implements OnInit {
         private playerBoardsService: playerBoardsService,
         private boardsService: BoardServiceService,
         private matchService: MatchServiceService,
-        private computerService: ComputerBoardService
-    ) {}
+        private computerService: ComputerBoardService,
+        private GameStateService: GameStateService
+    ) {
+        this.matchService.changeTurn.subscribe((turn) => {
+            if (turn == 'computer') {
+                this.computerTurn();
+            }
+        });
+    }
 
     playerBoard: Column[][] = [];
     computerBoard: Column[][] = [];
 
-    private _gameState: GameState = GameState.Preparing;
+    gameStatus: GameState = GameState.Preparing;
+    // gameBattle: GameState = GameState.Battle;
+    // gameFinished: GameState = GameState.Finished;
     gameBattle: GameState = GameState.Battle;
-    gameFinished: GameState = GameState.Finished;
+
+    // get gameState() {
+    //     return this.GameStateService.gameState;
+    // }
 
     currentShipIndex: number = 0;
 
@@ -45,17 +60,20 @@ export class SinglePlayerComponent implements OnInit {
     remainingParts: number | null = null;
 
     placedShips: Set<string> = new Set();
+    hitCells: Set<string> = new Set();
+    missedCells: Set<string> = new Set();
     lastColumnClicked: string | null = null;
     placedShipParts: string[] = [];
 
-    boardsMap: Map<string, Map<string, Column>> = new Map();
     boards: string[][] = [];
+    // hitCells: Set<string> = new Set();
+    // missedCells: Set<string> = new Set();
 
     currTurn: Turn = Turn.player;
 
-    get getState(): GameState {
-        return this._gameState;
-    }
+    // get getState(): GameState {
+    //     return this._gameState;
+    // }
 
     addPart(columnId: string, side: string) {
         let board: Column[][];
@@ -77,9 +95,9 @@ export class SinglePlayerComponent implements OnInit {
     ships: Ship[] = [
         new Ship('Fulton', 2, 1),
         new Ship('Clermont', 3, 2),
-        new Ship('Argo', 4, 3),
-        new Ship('Dreadnought', 5, 4),
-        new Ship('Titanic', 5, 5),
+        // new Ship('Argo', 4, 3),
+        // new Ship('Dreadnought', 5, 4),
+        // new Ship('Titanic', 5, 5),
     ];
 
     ngOnInit() {
@@ -88,6 +106,7 @@ export class SinglePlayerComponent implements OnInit {
 
     initializeBoard() {
         this.playerBoard = this.boardsService.initalizeBoard();
+        this.computerBoard = this.boardsService.initalizeBoard();
     }
 
     selectShip(ship: Ship) {
@@ -149,7 +168,7 @@ export class SinglePlayerComponent implements OnInit {
             return;
         }
         this.lastColumnClicked = id;
-        switch (this._gameState) {
+        switch (this.GameStateService.gameState) {
             case GameState.Pending:
                 console.log('game not started yet');
                 break;
@@ -185,9 +204,7 @@ export class SinglePlayerComponent implements OnInit {
                 }
                 break;
             case GameState.Battle:
-                // TODO
-                // implement game logic
-
+                this.playerAttack(id);
                 break;
             case GameState.Finished:
                 console.log('the battle is finished');
@@ -199,43 +216,76 @@ export class SinglePlayerComponent implements OnInit {
         console.log(id, this.boardsService.getColumnsMap().get(id));
     }
 
-    // playerAttack(columnId: string) {
-    //     const result = this.matchService.hitOnColumn(
-    //         columnId,
-    //         this.computerBoard,
-    //         this.playerBoard
-    //     );
+    playerAttack(columnId: string) {
+        const result = this.matchService.hitOnColumn(
+            columnId,
+            this.computerBoard,
+            this.playerBoard
+        );
 
-    //     if (result.hit) {
-    //         console.log('hit');
-    //         if (result.shipDestroyed) {
-    //             console.log('ship is destroyed');
-    //         }
-    //     } else {
-    //         console.log('missed');
-    //     }
-    //     this.currTurn = Turn.computer;
-    //     this.computerTurn;
-    // }
-    // computerTurn() {
-    //     // if (this._gameState !== GameState.Battle) {
-    //     //     console.log('not in battle');
-    //     //     return;
-    //     // }
-    //     // const result = this.computerService.computerAttack(this.playerBoard);
-    //     // if (result.hit) {
-    //     //     if (result.shipDestroyed) {
-    //     //         console.log('ship is destroyed');
-    //     //     } else {
-    //     //         console.log('computer missied');
-    //     //     }
-    //     //     this.currTurn = Turn.player;
-    //     // }
-    // }
+        let column: Column | null = null;
 
-    // // allShipsPlaced(): boolean {
-    // //     return this.placedShips.size === this.ships.length;
-    // // }
+        // Loop through the board to find the column by its ID
+        for (let row = 0; row < this.computerBoard.length; row++) {
+            for (let col = 0; col < this.computerBoard[row].length; col++) {
+                if (this.computerBoard[row][col].id === columnId) {
+                    column = this.computerBoard[row][col];
+                    break;
+                }
+            }
+            if (column) break; // Break the outer loop if column is found
+        }
+
+        // If the column is found, apply the attack result
+        if (column) {
+            if (result.hit) {
+                column.hitted();
+                console.log('hit');
+                if (result.shipDestroyed) {
+                    console.log('ship is destroyed');
+                }
+            } else {
+                column.missed();
+                console.log('missed');
+            }
+        } else {
+            console.log('Column not found.');
+        }
+
+        this.currTurn = Turn.computer;
+        this.computerTurn();
+    }
+    computerTurn() {
+        this.matchService.computerTurn(this.playerBoard);
+    }
+
+    get gameState(): GameState {
+        return this.GameStateService.gameState;
+    }
+
+    allShipsPlaced(): boolean {
+        return this.placedShips.size === this.ships.length;
+    }
+
+    isHit(columnId: string): boolean {
+        // return (
+        //     this.hitCells.has(columnId) ||
+        //     this.playerBoard.some((row) =>
+        //         row.some((col) => col.id === columnId && col.hittedColumn)
+        //     )
+        // );
+        return this.hitCells.has(columnId);
+    }
+
+    isMissed(columnId: string): boolean {
+        // return (
+        //     this.missedCells.has(columnId) ||
+        //     this.playerBoard.some((row) =>
+        //         row.some((col) => col.id === columnId && col.missedColumn)
+        //     )
+        // );
+        return this.missedCells.has(columnId);
+    }
 
     // // disableButton(): boolean {
     // //     if (this.allShipsPlaced()) {
@@ -248,9 +298,21 @@ export class SinglePlayerComponent implements OnInit {
     // //         return !this.isStartGame;
     // //     }
     // // }
+    onComputerColumnClick(columnId: string) {
+        if (this.GameStateService.gameState !== GameState.Battle) {
+            console.log('Game is not in battle state');
+            return;
+        }
+        this.playerAttack(columnId);
+    }
 
     start() {
-        this._gameState = GameState.Battle;
-        console.log('Game Started');
+        if (this.allShipsPlaced()) {
+            this.GameStateService.gameState = GameState.Battle;
+            console.log('Game Started');
+            this.currTurn = Turn.player;
+        } else {
+            console.log('place all ships');
+        }
     }
 }

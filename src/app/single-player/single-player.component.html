@@ -10,13 +10,16 @@
                 <tr *ngFor="let row of playerBoard; let rowIndex = index">
                     <td
                         *ngFor="let cell of row; let colIndex = index"
-                        [ngClass]="{ 'ship-cell': cell.ship,
-                            'Fulton':cell.ship?.name==='Fulton',
-                            'Clermont':cell.ship?.name==='Clermont',
-                            'Argo':cell.ship?.name==='Argo',
-                            'Dreadnought':cell.ship?.name==='Dreadnought',
-                            'Titanic':cell.ship?.name==='Titanic',
-                         }"
+                        [ngClass]="{
+                            'ship-cell': cell.ship,
+                            Fulton: cell.ship?.name === 'Fulton',
+                            Clermont: cell.ship?.name === 'Clermont',
+                            Argo: cell.ship?.name === 'Argo',
+                            Dreadnought: cell.ship?.name === 'Dreadnought',
+                            Titanic: cell.ship?.name === 'Titanic',
+                            hit: cell.hittedColumn,
+                            missed: cell.missedColumn
+                        }"
                         (click)="columnClick(cell.id, playerBoard)"
                         [id]="cell.id"
                     ></td>
@@ -42,13 +45,17 @@
                 {{ selectedShip.length }}/{{ remainingParts }}
             </div>
         </div>
-        <button class="btn btn-info" (click)="removeLastPlacedPart()">
+        <button
+            class="btn btn-info"
+            (click)="removeLastPlacedPart()"
+            [disabled]="gameState === gameBattle"
+        >
             back
         </button>
         <button
             class="btn btn-info"
             (click)="start()"
-            [disabled]="getState === gameBattle"
+            [disabled]="gameState === gameBattle"
         >
             start
         </button>

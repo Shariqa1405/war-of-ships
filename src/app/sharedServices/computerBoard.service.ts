@@ -2,7 +2,7 @@ import { forwardRef, Inject, inject, Injectable } from "@angular/core";
 import { Ship, ShipPart } from "../shared-models/ships.model";
 import { Column } from "../shared-models/column.model";
 import { BoardServiceService } from "./board-service.service";
-import { MatchServiceService } from "./matchservice.service";
+import { AttackService } from "./attack.service";
 
 @Injectable({
   providedIn: "root",
@@ -10,8 +10,7 @@ import { MatchServiceService } from "./matchservice.service";
 export class ComputerBoardService {
   constructor(
     private boardsService: BoardServiceService,
-    // @Inject(forwardRef(() => MatchServiceService))
-    private matchService: MatchServiceService
+    private attackService: AttackService
   ) {}
 
   placeShips(board: Column[][], ships: Ship[]) {
@@ -134,26 +133,50 @@ export class ComputerBoardService {
   private getRandomItem<T>(items: T[]): T {
     return items[Math.floor(Math.random() * items.length)];
   }
+
   computerAttack(playerBoard: Column[][]): {
     hit: boolean;
     shipDestroyed: boolean;
+    columnId: string;
   } {
-    const emptyColumns = Array.from(
-      this.boardsService.getColumnsMap().values()
-    ).filter((column) => column.isEmpty === false && column.ship !== null);
+    const height = this.boardsService.height;
+    const width = this.boardsService.width;
+    let validTargets: { row: number; column: number }[] = [];
 
-    if (emptyColumns.length === 0) {
-      console.log("No valid target columns.");
-      return { hit: false, shipDestroyed: false };
+    for (let row = 0; row < height; row++) {
+      for (let column = 0; column < width; column++) {
+        const currentColumn = playerBoard[row][column];
+        if (!currentColumn.hittedColumn && !currentColumn.missedColumn) {
+          validTargets.push({ row, column });
+        }
+      }
     }
 
-    const randomColumn =
-      emptyColumns[Math.floor(Math.random() * emptyColumns.length)];
-    const columnId = randomColumn.id;
+    if (validTargets.length === 0) {
+      console.log("No valid target columns.");
+      return { hit: false, shipDestroyed: false, columnId: "" };
+    }
 
-    const result = this.matchService.hitOnColumn(columnId, playerBoard, []);
+    // Randomly select a target
+    const randomTarget = this.getRandomItem(validTargets);
+    const targetColumn = playerBoard[randomTarget.row][randomTarget.column];
+    const columnId = targetColumn.id;
 
-    console.log(`Computer attacks ${columnId}: ${result.hit ? "Hit" : "Miss"}`);
-    return result;
+    // Perform the attack using the refactored AttackService
+    const result = this.attackService.hitOnColumn(columnId, playerBoard);
+
+    // Update the actual board with the attack result
+    if (result.hit) {
+      targetColumn.hittedColumn = true;
+      console.log(`Computer attacks ${columnId}: Hit`);
+      if (result.shipDestroyed) {
+        console.log("Ship is destroyed");
+      }
+    } else {
+      targetColumn.missedColumn = true;
+      console.log(`Computer attacks ${columnId}: Miss`);
+    }
+
+    return { ...result, columnId };
   }
 }
