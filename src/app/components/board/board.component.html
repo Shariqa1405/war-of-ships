@@ -1,0 +1,16 @@
+<table class="board">
+    @for (row of board; track row) {
+    <tr>
+        @for (cell of row; track cell) {
+        <td
+            [style.background-color]="cell.ship?.color"
+            [class.hit]="cell.hitted"
+            [class.missed]="cell.missed"
+            [class]="{ 'ship': cell.ship }"
+            (click)="onCellClick(cell)"
+            [id]="cell.id"
+        ></td>
+        }
+    </tr>
+    }
+</table>

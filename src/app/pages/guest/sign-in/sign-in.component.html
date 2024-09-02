@@ -1,0 +1,29 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            @if (error) {
+            <div class="alert alert-danger">
+                <p>
+                    {{ error }}
+                </p>
+            </div>
+            }
+            
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label for="email">email</label>
+                    <input type="email" id="email" class="form-control" formControlName="email" />
+                </div>
+                <div class="form-group">
+                    <label for="password">password</label>
+                    <input type="password" id="password" class="form-control" formControlName="password" />
+                </div>
+                <button class="btn btn-primary" type="submit" [disabled]="!form.valid">
+                    {{ isLoginMode ? "Login" : " Signup" }}
+                </button>
+                |
+                <button class="btn btn-primary" type="submit" (click)="onSwithcMode()">Switch to {{ isLoginMode ? "Sign up" : "Signin" }}</button>
+            </form>
+        </div>
+    </div>
+</div>
