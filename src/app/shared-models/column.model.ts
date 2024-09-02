@@ -2,7 +2,7 @@ import { Ship, ShipPart } from './ships.model';
 
 export class Column {
     id: string;
-    part: ShipPart;
+    part: ShipPart | null;
     ship: Ship;
     public isEmpty: boolean;
     hittedColumn: boolean;
@@ -27,28 +27,31 @@ export class Column {
     }
 
     hitted(): boolean {
-        // Return false if this column has already been hit or missed
         if (this.hittedColumn || this.missedColumn) {
+            console.log('222');
+
             return false;
         }
 
-        // Mark the column as hit
         this.hittedColumn = true;
 
         if (this.ship) {
             const part = this.ship.parts.get(this.id);
             if (part) {
                 part.isDestroyed = true;
-                return true; // Hit successful
+                console.log('111');
+                return true;
             }
         }
 
-        // If no ship or ship part found, mark as missed
         this.missedColumn = true;
-        return false; // Hit unsuccessful
+        console.log('>>>>');
+        return false;
     }
 
     missed() {
-        this.missedColumn = true;
+        if (!this.hittedColumn) {
+            this.missedColumn = true;
+        }
     }
 }

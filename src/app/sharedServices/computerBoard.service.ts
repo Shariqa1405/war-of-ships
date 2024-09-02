@@ -10,8 +10,12 @@ import { AttackService } from "./attack.service";
 export class ComputerBoardService {
   constructor(
     private boardsService: BoardServiceService,
-    private attackService: AttackService
+    public attackService: AttackService
   ) {}
+
+  hit: boolean = false;
+  miss: boolean = false;
+  columnId: any;
 
   placeShips(board: Column[][], ships: Ship[]) {
     ships.forEach((ship) => {
@@ -139,6 +143,7 @@ export class ComputerBoardService {
     shipDestroyed: boolean;
     columnId: string;
   } {
+    console.log("Starting computerAttack...");
     const height = this.boardsService.height;
     const width = this.boardsService.width;
     let validTargets: { row: number; column: number }[] = [];
@@ -157,15 +162,14 @@ export class ComputerBoardService {
       return { hit: false, shipDestroyed: false, columnId: "" };
     }
 
-    // Randomly select a target
     const randomTarget = this.getRandomItem(validTargets);
     const targetColumn = playerBoard[randomTarget.row][randomTarget.column];
     const columnId = targetColumn.id;
 
-    // Perform the attack using the refactored AttackService
     const result = this.attackService.hitOnColumn(columnId, playerBoard);
 
-    // Update the actual board with the attack result
+    this.columnId = columnId;
+
     if (result.hit) {
       targetColumn.hittedColumn = true;
       console.log(`Computer attacks ${columnId}: Hit`);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Ship, ShipPart } from '../shared-models/ships.model';
 import { Column } from '../shared-models/column.model';
 import { playerBoardsService } from '../sharedServices/playerBoards.service';
@@ -31,8 +31,9 @@ export class SinglePlayerComponent implements OnInit {
         private playerBoardsService: playerBoardsService,
         private boardsService: BoardServiceService,
         private matchService: MatchServiceService,
-        private computerService: ComputerBoardService,
-        private GameStateService: GameStateService
+        public computerBoardService: ComputerBoardService,
+        private GameStateService: GameStateService,
+        private cdr: ChangeDetectorRef
     ) {
         this.matchService.changeTurn.subscribe((turn) => {
             if (turn == 'computer') {
@@ -162,45 +163,60 @@ export class SinglePlayerComponent implements OnInit {
         }
     }
 
-    columnClick(id: string, Cell?) {
-        if (this.currTurn !== Turn.player) {
-            console.log('not player Turn');
+    columnClick(id: string, side: 'player' | 'computer') {
+        // if (this.currTurn !== Turn.player) {
+        //     console.log('not player Turn');
+        //     return;
+        // }
+
+        if (
+            this.currTurn !== Turn.player ||
+            (side === 'player' &&
+                this.GameStateService.gameState === GameState.Battle)
+        ) {
+            console.log(
+                'Invalid action: Not player turn or clicking on player board during battle'
+            );
             return;
         }
+
         this.lastColumnClicked = id;
         switch (this.GameStateService.gameState) {
             case GameState.Pending:
                 console.log('game not started yet');
                 break;
             case GameState.Preparing:
-                if (this.selectedShip) {
-                    const result = this.playerBoardsService.placeShip(
-                        id,
-                        this.selectedShip,
-                        this.shipPlacementCount,
-                        this.remainingParts,
-                        this.placedShips,
-                        this.placedShipParts
-                    );
-                    if (result.success) {
-                        this.shipPlacementCount = result.shipPlacementCount;
-                        this.remainingParts = result.remainingParts;
-                        if (
-                            this.shipPlacementCount === this.selectedShip.length
-                        ) {
-                            console.log(
-                                'Ship fully placed:',
-                                this.selectedShip.name
-                            );
-                            this.placedShips.add(this.selectedShip.name);
-                            this.selectedShip = null;
-                            this.remainingParts = null;
+                if (side === 'player') {
+                    if (this.selectedShip) {
+                        const result = this.playerBoardsService.placeShip(
+                            id,
+                            this.selectedShip,
+                            this.shipPlacementCount,
+                            this.remainingParts,
+                            this.placedShips,
+                            this.placedShipParts
+                        );
+                        if (result.success) {
+                            this.shipPlacementCount = result.shipPlacementCount;
+                            this.remainingParts = result.remainingParts;
+                            if (
+                                this.shipPlacementCount ===
+                                this.selectedShip.length
+                            ) {
+                                console.log(
+                                    'Ship fully placed:',
+                                    this.selectedShip.name
+                                );
+                                this.placedShips.add(this.selectedShip.name);
+                                this.selectedShip = null;
+                                this.remainingParts = null;
+                            }
+                        } else {
+                            console.log('Failed to place ship part.');
                         }
                     } else {
-                        console.log('Failed to place ship part.');
+                        console.log('no ship selected');
                     }
-                } else {
-                    console.log('no ship selected');
                 }
                 break;
             case GameState.Battle:
@@ -225,7 +241,6 @@ export class SinglePlayerComponent implements OnInit {
 
         let column: Column | null = null;
 
-        // Loop through the board to find the column by its ID
         for (let row = 0; row < this.computerBoard.length; row++) {
             for (let col = 0; col < this.computerBoard[row].length; col++) {
                 if (this.computerBoard[row][col].id === columnId) {
@@ -233,10 +248,9 @@ export class SinglePlayerComponent implements OnInit {
                     break;
                 }
             }
-            if (column) break; // Break the outer loop if column is found
+            if (column) break;
         }
 
-        // If the column is found, apply the attack result
         if (column) {
             if (result.hit) {
                 column.hitted();
@@ -253,10 +267,44 @@ export class SinglePlayerComponent implements OnInit {
         }
 
         this.currTurn = Turn.computer;
+        console.log('1234');
+
         this.computerTurn();
     }
     computerTurn() {
-        this.matchService.computerTurn(this.playerBoard);
+        const computerResult = this.matchService.computerTurn(this.playerBoard);
+        console.log('playerboarddd', this.playerBoard);
+        if (computerResult) {
+            const { columnId, hit, shipDestroyed } = computerResult;
+
+            if (hit) {
+                console.log(`Computer hit at ${columnId}`);
+                if (shipDestroyed) {
+                    console.log('Computer destroyed a ship!');
+                }
+            } else {
+                console.log(`Computer missed at ${columnId}`);
+            }
+
+            this.cdr.detectChanges();
+        }
+    }
+
+    private areAllShipsDestroyed(board: Column[][]): boolean {
+        for (let row of board) {
+            for (let column of row) {
+                if (column.part && !column.part.isDestroyed) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    gameFinished(winner: 'player' | 'computer') {
+        this.GameStateService.gameState = GameState.Finished;
+        console.log(`Game Over! ${winner} wins.`);
     }
 
     get gameState(): GameState {
@@ -267,37 +315,29 @@ export class SinglePlayerComponent implements OnInit {
         return this.placedShips.size === this.ships.length;
     }
 
-    isHit(columnId: string): boolean {
-        // return (
-        //     this.hitCells.has(columnId) ||
-        //     this.playerBoard.some((row) =>
-        //         row.some((col) => col.id === columnId && col.hittedColumn)
-        //     )
-        // );
-        return this.hitCells.has(columnId);
+    isHit(columnId: string) {
+        // const computerResult = this.matchService.computerTurn(this.playerBoard);
+        // this.computerTurn();
+        if (columnId === this.computerBoardService.columnId) {
+            console.log(columnId, 'ssssss');
+
+            return this.hitCells.has(columnId);
+        }
+
+        // console.log('compresult', computerResult);
     }
 
-    isMissed(columnId: string): boolean {
-        // return (
-        //     this.missedCells.has(columnId) ||
-        //     this.playerBoard.some((row) =>
-        //         row.some((col) => col.id === columnId && col.missedColumn)
-        //     )
-        // );
-        return this.missedCells.has(columnId);
+    isMissed(columnId: string) {
+        // const computerResult = this.matchService.computerTurn(this.playerBoard);
+        // this.computerTurn();
+        if (columnId === this.computerBoardService.columnId) {
+            console.log(columnId, 'ssssss');
+
+            return this.missedCells.has(columnId);
+        }
+        // console.log('compresult miss', computerResult);
     }
 
-    // // disableButton(): boolean {
-    // //     if (this.allShipsPlaced()) {
-    // //         this._gameState === GameState.Battle;
-    // //         console.log('Game Started', GameState.Battle);
-    // //         return this.isStartGame;
-    // //     }
-    // //     if (!this.allShipsPlaced()) {
-    // //         this._gameState !== GameState.Pending;
-    // //         return !this.isStartGame;
-    // //     }
-    // // }
     onComputerColumnClick(columnId: string) {
         if (this.GameStateService.gameState !== GameState.Battle) {
             console.log('Game is not in battle state');

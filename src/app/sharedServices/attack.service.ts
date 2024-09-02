@@ -40,7 +40,7 @@ export class AttackService {
       `Column ${columnId} updated: hit = ${hitResult}, destroyed = ${targetColumn.ship?.isDestroyed()}`
     );
 
-    targetColumn.hittedColumn = true;
+    // targetColumn.hittedColumn = true;
 
     return {
       hit: hitResult,

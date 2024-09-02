@@ -47,18 +47,40 @@ export class MatchServiceService implements OnInit {
   }
 
   computerTurn(playerBoard: Column[][]) {
-    const result = this.computerBoardService.computerAttack(playerBoard);
+    try {
+      console.log("Computer turn started");
 
-    if (result.hit) {
-      console.log("Computer hit a ship on the player's board!");
-      if (result.shipDestroyed) {
-        console.log("Computer destroyed a ship on the player's board!");
+      const result = this.computerBoardService.computerAttack(playerBoard);
+
+      if (result.hit) {
+        console.log(
+          "Computer hit a ship on the player's board at:",
+          result.columnId
+        );
+        if (result.shipDestroyed) {
+          console.log("Computer destroyed a ship on the player's board!");
+        }
+      } else {
+        console.log(
+          "Computer missed on the player's board at:",
+          result.columnId
+        );
       }
-    } else {
-      console.log("Computer missed on the player's board.");
-    }
 
-    // Ensure turn toggles back to the player after the computer's move
-    this.toggleTurn();
+      console.log(
+        "Player board after computer move:",
+        JSON.stringify(playerBoard)
+      );
+
+      this.toggleTurn();
+
+      return {
+        columnId: result.columnId,
+        hit: result.hit,
+        shipDestroyed: result.shipDestroyed,
+      };
+    } catch (error) {
+      console.error("Error during computer turn:", error);
+    }
   }
 }

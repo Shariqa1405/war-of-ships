@@ -17,10 +17,10 @@
                             Argo: cell.ship?.name === 'Argo',
                             Dreadnought: cell.ship?.name === 'Dreadnought',
                             Titanic: cell.ship?.name === 'Titanic',
-                            hit: cell.hittedColumn,
-                            missed: cell.missedColumn
+                            hit: computerBoardService.hit,
+                            missed: computerBoardService.miss
                         }"
-                        (click)="columnClick(cell.id, playerBoard)"
+                        (click)="columnClick(cell.id, 'player')"
                         [id]="cell.id"
                     ></td>
                 </tr>
