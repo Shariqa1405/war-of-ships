@@ -11,6 +11,10 @@ export class Ship {
         return this._color;
     }
 
+    public get partsLength() {
+        return this._parts.size;
+    }
+
     constructor(name: string, length: number, id: number) {
         this._name = name;
         this._length = length;

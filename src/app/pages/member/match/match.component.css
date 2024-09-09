@@ -1,0 +1,27 @@
+.boards-section {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-around;
+}
+
+.boards-section .board-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.boards-section .board-column .army-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin-top: 12px;
+}
+
+.boards-section .board-column .army-section button {
+    color: white;
+}
+
+.boards-section .board-column .army-section button.selected{
+    border: 4px solid red;
+}

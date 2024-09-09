@@ -1,1 +1,14 @@
-<app-board [config]="p1Bload"></app-board>
+<div class="boards-section">
+    <div class="board-column">
+        <app-board [config]="playerBload" (onClick)="onPlayerBoardClick($event)"></app-board>
+        <div class="army-section">
+            @for (item of army; track $index) {
+            <button [style.background-color]="item.color" [class.selected]="isArmySelected(item.id)" (click)="onArmySelect(item.id)" >{{ getBattleshipPartsLength(item.id) + ' / ' + item.partsCount }}</button>
+            }
+        </div>
+    </div>
+    
+    <app-board [config]="npcBload" (onClick)="onNPCBoardClick($event)"></app-board>
+</div>
+
+
