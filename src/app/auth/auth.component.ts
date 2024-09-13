@@ -3,7 +3,8 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { AuthService, AuthResponseData } from '../sharedServices/auth.service';
+import { AuthService } from '../services/auth.service';
+import { IFirebaseUser } from '../models/interfaces/firebase-user.interface';
 
 @Component({
   selector: 'app-auth',
@@ -27,7 +28,7 @@ export class AuthComponent implements OnInit {
     const email = form.value.email;
     const password = form.value.password;
 
-    let authObs: Observable<AuthResponseData>;
+    let authObs: Observable<IFirebaseUser>;
 
     if (this.isLoginMode) {
       authObs = this.authService.login(email, password);

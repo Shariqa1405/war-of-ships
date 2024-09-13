@@ -15,13 +15,32 @@ import { AuthComponent } from './auth/auth.component';
 import { CleanComponent } from './clean/clean.component';
 import { ComputerComponent } from './single-player/computer/computer.component';
 import { ComputerBoardService } from './sharedServices/computerBoard.service';
+import { MemberComponent } from './pages/member/member.component';
+import { SignInComponent } from './pages/guest/sign-in/sign-in.component';
+import { SignUpComponent } from './pages/guest/sign-up/sign-up.component';
+import { DashboardComponent } from './pages/member/dashboard/dashboard.component';
+import { MatchComponent } from './pages/member/match/match.component';
+import { canActivateMemberGuard } from './guards/can-activate-member.guard';
 
 const routes: Routes = [
-    { path: '', component: GameInfoComponent },
-    { path: 'SinglePlayer', component: SinglePlayerComponent },
-    { path: 'MultiPlayer', component: MultiplayerComponent },
-    { path: 'How To Play', component: HowToPlayComponent },
-    { path: 'Auth', component: AuthComponent },
+    //{ path: '', component: GameInfoComponent },
+    //{ path: 'SinglePlayer', component: SinglePlayerComponent },
+    //{ path: 'MultiPlayer', component: MultiplayerComponent },
+    //{ path: 'How To Play', component: HowToPlayComponent },
+    //{ path: 'Auth', component: AuthComponent },
+
+    { path: '', pathMatch: 'full', redirectTo: 'member' },
+
+    {
+        path: 'member',
+        pathMatch: 'prefix',
+        canActivate: [canActivateMemberGuard],
+        children: [
+            { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+            { path: 'dashboard', pathMatch: 'full', component: DashboardComponent },
+            { path: 'match', pathMatch: 'full', component: MatchComponent },
+        ],
+    },
 ];
 
 @NgModule({
@@ -35,15 +54,13 @@ const routes: Routes = [
         CleanComponent,
         AuthComponent,
         ComputerComponent,
+        MemberComponent,
+        SignInComponent,
+        SignUpComponent,
+        DashboardComponent,
+        MatchComponent,
     ],
-    imports: [
-        BrowserModule,
-        FormsModule,
-        ReactiveFormsModule,
-        RouterModule.forRoot(routes),
-        HttpClientModule,
-        DragDropModule,
-    ],
+    imports: [BrowserModule, FormsModule, ReactiveFormsModule, RouterModule.forRoot(routes), HttpClientModule, DragDropModule],
     providers: [ComputerBoardService],
     bootstrap: [AppComponent],
 })
